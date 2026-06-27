@@ -29,14 +29,13 @@ export const paintColors = [
   { name: "Hardal", hex: "#E6B52E" },
   { name: "Saks Mavisi", hex: "#2169D8" },
   { name: "Bordo", hex: "#8A1E4D" },
-  { name: "Kahverengi", hex: "#2A1D18" },
   { name: "Açık Pembe", hex: "#E9D8DC" },
 ];
 
 export const bagModels = [
   {
     id: "canta3",
-    name: "Duffel Çanta",
+    name: "Loop Barrel Pack",
     lineArt: canta3Lines,
     sections: [
       {
@@ -136,6 +135,8 @@ export const bagModels = [
           [570, 557],
           [848, 473],
           [331, 1023],
+          [727, 514],
+          [325, 659],
         ],
       },
       {
@@ -172,13 +173,37 @@ export const bagModels = [
           [607, 914],
           [426, 993],
           [700, 874],
+          [233, 592],
+          [188, 640],
+          [957, 407],
+          [920, 344],
+          [821, 335],
+          [854, 339],
+          [826, 351],
+          [831, 360],
+          [810, 360],
+          [842, 339],
+          [902, 349],
+          [870, 347],
+          [877, 347],
+          [922, 369],
+          [884, 336],
+          [931, 373],
+          [273, 489],
+          [569, 394],
+          [572, 394],
+          [344, 913],
+          [368, 940],
+          [350, 936],
+          [356, 940],
+          [357, 935],
         ],
       },
     ],
   },
   {
     id: "canta2",
-    name: "Sırt Çantası",
+    name: "Loop Roll Pack",
     lineArt: canta2Lines,
     sections: [
       {
@@ -242,13 +267,42 @@ export const bagModels = [
       {
         label: "Sabit siyah detaylar",
         color: "Siyah",
-        seeds: [],
+        seeds: [
+          [147, 716],
+          [165, 741],
+          [163, 762],
+          [127, 860],
+          [94, 859],
+          [163, 874],
+          [130, 875],
+          [819, 739],
+          [819, 748],
+          [832, 772],
+          [840, 893],
+          [991, 854],
+          [951, 859],
+          [928, 844],
+          [953, 837],
+          [951, 748],
+          [931, 734],
+          [914, 709],
+          [997, 863],
+          [903, 885],
+          [127, 753],
+          [493, 556],
+          [575, 504],
+          [498, 500],
+          [537, 500],
+          [998, 860],
+          [974, 853],
+          [991, 854],
+        ],
       },
     ],
   },
   {
     id: "canta1",
-    name: "Bel Çantası",
+    name: "Loop Waist Pack",
     lineArt: canta1Lines,
     sections: [
       {
@@ -283,10 +337,7 @@ export const bagModels = [
         key: "color4",
         label: "Alt detay",
         defaultColor: "Saks Mavisi",
-        seeds: [
-          [482, 861],
-          [1011, 751],
-        ],
+        seeds: [[414, 808]],
       },
       {
         key: "color5",
@@ -300,12 +351,38 @@ export const bagModels = [
           [519, 724],
         ],
       },
+      {
+        key: "color6",
+        label: "Ara detay",
+        defaultColor: "Mavi",
+        seeds: [[484, 818]],
+      },
     ],
     fixedSections: [
       {
         label: "Sabit siyah detaylar",
         color: "Siyah",
-        seeds: [],
+        seeds: [
+          [399, 449],
+          [442, 398],
+          [544, 701],
+          [388, 596],
+          [403, 415],
+          [384, 414],
+          [410, 486],
+          [447, 476],
+          [396, 602],
+          [386, 587],
+          [380, 585],
+          [543, 715],
+          [561, 728],
+          [563, 880],
+          [326, 769],
+          [558, 745],
+          [569, 772],
+          [356, 634],
+          [367, 624],
+        ],
       },
     ],
   },
@@ -318,11 +395,16 @@ export function colorByName(colorName) {
 }
 
 function shuffledUniqueColors() {
-  const uniqueColors = [...new Map(paintColors.map((color) => [color.name, color])).values()];
+  const uniqueColors = [
+    ...new Map(paintColors.map((color) => [color.name, color])).values(),
+  ];
 
   for (let index = uniqueColors.length - 1; index > 0; index -= 1) {
     const swapIndex = Math.floor(Math.random() * (index + 1));
-    [uniqueColors[index], uniqueColors[swapIndex]] = [uniqueColors[swapIndex], uniqueColors[index]];
+    [uniqueColors[index], uniqueColors[swapIndex]] = [
+      uniqueColors[swapIndex],
+      uniqueColors[index],
+    ];
   }
 
   return uniqueColors;
@@ -333,7 +415,9 @@ export function buildDefaultConfig(model) {
   const shuffledColors = shuffledUniqueColors();
 
   if (sectionKeys.length > shuffledColors.length) {
-    throw new Error("Rastgele renk seçimi için section sayısı palet renginden fazla olamaz.");
+    throw new Error(
+      "Cannot randomize unique colors: section count exceeds palette size.",
+    );
   }
 
   return Object.fromEntries(

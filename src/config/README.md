@@ -1,22 +1,24 @@
-# Çanta Modeli Ayarları
+# Bag Model Configuration
 
-Boyanabilir alan, sabit alan veya renk paleti değiştirmek için `bagModels.js` dosyasını düzenle.
+Edit `bagModels.js` when you need to change paintable regions, fixed regions, or the color palette.
 
-## Yeni Section Ekleme
+The customer-facing UI is Turkish, so model names, section labels, and color names may intentionally be Turkish.
 
-İlgili modeli bul:
+## Add A New Section
+
+Find the target model:
 
 ```js
 {
   id: 'canta3',
   name: 'Duffel Çanta',
   sections: [
-    // yeni section buraya
+    // add the new section here
   ],
 }
 ```
 
-Yeni section örneği:
+Add a section:
 
 ```js
 {
@@ -30,18 +32,18 @@ Yeni section örneği:
 }
 ```
 
-Kurallar:
+Rules:
 
-- `key` aynı model içinde benzersiz olmalı.
-- Basit sıralama için `color1`, `color2`, `color3` gibi devam edebilirsin.
-- `label` kullanıcıya görünen isimdir.
-- `defaultColor` artık sadece referans amaçlı; uygulama açılışında her model kendi renklerini rastgele ve birbirinden farklı seçiyor.
-- `seeds` önizlemede tıklayınca konsola düşen `[x, y]` koordinatlarıdır.
-- Bir section içine istediğin kadar seed ekleyebilirsin.
+- `key` must be unique within the model.
+- Use `color1`, `color2`, `color3`, etc. for simple ordering.
+- `label` is shown in the customer-facing UI.
+- `defaultColor` is mainly a reference value; initial colors are randomized per model and kept unique within that model.
+- `seeds` are `[x, y]` canvas coordinates logged from preview debug clicks.
+- A section can contain as many seeds as needed.
 
-## Boyama Taşarsa
+## If A Fill Leaks
 
-Bir seed yanlışlıkla arka plana kaçıyorsa section'a daha düşük bir limit ekleyebilirsin:
+If a seed leaks into the background or another large area, add a lower pixel limit to that section:
 
 ```js
 {
@@ -53,11 +55,11 @@ Bir seed yanlışlıkla arka plana kaçıyorsa section'a daha düşük bir limit
 }
 ```
 
-Alan çok küçük kalıyorsa `maxFillPixels` değerini yükselt.
+If the fill becomes too small, increase `maxFillPixels`.
 
-## Sabit Alan Ekleme
+## Add Fixed Regions
 
-Kullanıcı tarafından değiştirilmeyecek ama her zaman boyanacak alanlar için `fixedSections` kullan:
+Use `fixedSections` for areas that should always be painted but should not appear as editable controls:
 
 ```js
 fixedSections: [
@@ -72,11 +74,11 @@ fixedSections: [
 ],
 ```
 
-`color`, palet adı (`'Siyah'`) veya hex (`'#050505'`) olabilir.
+`color` can be a palette color name like `'Siyah'` or a hex color like `'#050505'`.
 
-Sabit alanlar kullanıcı seçimlerinden sonra boyanır, yani koordinatlar çakışırsa sabit alan kazanır.
+Fixed regions are painted after user-editable regions, so they win when coordinates overlap.
 
-Gerekirse tolerans da verebilirsin:
+You can also set a custom fill tolerance:
 
 ```js
 {
@@ -87,12 +89,13 @@ Gerekirse tolerans da verebilirsin:
 }
 ```
 
-## Renk Paleti
+## Color Palette
 
-Renkler `paintColors` içinde durur:
+Colors live in `paintColors`:
 
 ```js
 { name: 'Saks Mavisi', hex: '#2169D8' },
 ```
 
-Şu an uygulama sadece bu listedeki renkleri gösterir.
+The app only shows colors from that list.
+
