@@ -1,22 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import confetti from 'canvas-confetti';
 import { ColorSwatchGroup } from './components/ColorSwatchGroup.jsx';
 import { ConfigSummary } from './components/ConfigSummary.jsx';
 import { ModelSelector } from './components/ModelSelector.jsx';
 import { ProductPreview } from './components/ProductPreview.jsx';
 import { bagModels, buildDefaultConfig, buildDefaultConfigsByModel, paintColors } from './config/bagModels.js';
 import { enablePreviewDebug } from './constants/preview.js';
-import confettiImage from './assets/old/confetti.png';
+import discoGif from './assets/old/giphy.gif';
+import discoMusic from './assets/old/music.mp3';
 
 const whatsappPhoneNumber = '905454179089';
-const confettiPieces = Array.from({ length: 64 }, (_, index) => ({
-  id: index,
-  delay: `${-(index * 0.21).toFixed(2)}s`,
-  drift: `${((index % 9) - 4) * 24}px`,
-  duration: `${5.5 + (index % 7) * 0.62}s`,
-  left: `${(index * 11) % 100}%`,
-  size: `${34 + (index % 6) * 8}px`,
-}));
-
+const partyBurstCount = 50;
+const partyMinDelayMs = 1000;
+const partyMaxDelayMs = 3000;
 function App() {
   const [selectedModelId, setSelectedModelId] = useState(bagModels[0].id);
   const [configsByModelId, setConfigsByModelId] = useState(() => buildDefaultConfigsByModel());
@@ -24,6 +20,9 @@ function App() {
   const [copyStatus, setCopyStatus] = useState('');
   const previewRef = useRef(null);
   const discoIntervalRef = useRef(null);
+  const discoAudioRef = useRef(null);
+  const partyIntervalRef = useRef(null);
+  const partyTimeoutsRef = useRef([]);
   const [isDiscoMode, setIsDiscoMode] = useState(false);
 
   const selectedModel = bagModels.find((model) => model.id === selectedModelId) ?? bagModels[0];
@@ -53,13 +52,80 @@ function App() {
     setCopyStatus('');
   };
 
+  const playDiscoMusic = () => {
+    if (!discoAudioRef.current) {
+      const audio = new Audio(discoMusic);
+      audio.loop = true;
+      audio.volume = 0.5;
+      discoAudioRef.current = audio;
+    }
+
+    discoAudioRef.current.currentTime = 0;
+    discoAudioRef.current.play().catch(() => {
+      setCopyStatus('Muzik otomatik baslatilamadi. Disco topuna tekrar dokunmayi dene.');
+    });
+  };
+
+  const stopDiscoMusic = () => {
+    if (!discoAudioRef.current) {
+      return;
+    }
+
+    discoAudioRef.current.pause();
+    discoAudioRef.current.currentTime = 0;
+  };
+
+  const clearPartyTimers = () => {
+    partyTimeoutsRef.current.forEach((timeoutId) => window.clearTimeout(timeoutId));
+    partyTimeoutsRef.current = [];
+
+    if (partyIntervalRef.current) {
+      window.clearInterval(partyIntervalRef.current);
+      partyIntervalRef.current = null;
+    }
+  };
+
   const stopDiscoMode = () => {
     if (discoIntervalRef.current) {
       window.clearInterval(discoIntervalRef.current);
       discoIntervalRef.current = null;
     }
 
+    clearPartyTimers();
+    stopDiscoMusic();
     setIsDiscoMode(false);
+  };
+
+  const getRandomConfettiOrigin = () => ({
+    x: Math.random(),
+    y: Math.random(),
+  });
+
+  const triggerPartyConfetti = () => {
+    confetti({
+      origin: getRandomConfettiOrigin(),
+      particleCount: 14 + Math.floor(Math.random() * 18),
+      scalar: 0.8 + Math.random() * 0.8,
+      spread: 35 + Math.random() * 65,
+      startVelocity: 24 + Math.random() * 36,
+      ticks: 140,
+      zIndex: 30,
+    });
+  };
+
+  const schedulePartyWave = () => {
+    for (let index = 0; index < partyBurstCount; index += 1) {
+      const delay = partyMinDelayMs + Math.random() * (partyMaxDelayMs - partyMinDelayMs);
+      const timeoutId = window.setTimeout(() => {
+        triggerPartyConfetti();
+        partyTimeoutsRef.current = partyTimeoutsRef.current.filter((id) => id !== timeoutId);
+      }, delay);
+      partyTimeoutsRef.current.push(timeoutId);
+    }
+  };
+
+  const runDiscoTick = () => {
+    randomizeSelectedModel();
   };
 
   const toggleDiscoMode = () => {
@@ -68,9 +134,12 @@ function App() {
       return;
     }
 
-    randomizeSelectedModel();
+    runDiscoTick();
+    schedulePartyWave();
+    playDiscoMusic();
     setIsDiscoMode(true);
-    discoIntervalRef.current = window.setInterval(randomizeSelectedModel, 500);
+    discoIntervalRef.current = window.setInterval(runDiscoTick, 500);
+    partyIntervalRef.current = window.setInterval(schedulePartyWave, partyMaxDelayMs);
   };
 
   useEffect(() => stopDiscoMode, []);
@@ -110,24 +179,6 @@ function App() {
     <>
       <div className={`disco-backdrop${isDiscoMode ? ' is-active' : ''}`} aria-hidden="true" />
 
-      <div className={`confetti-rain${isDiscoMode ? ' is-active' : ''}`} aria-hidden="true">
-        {confettiPieces.map((piece) => (
-          <img
-            alt=""
-            className="confetti-piece"
-            key={piece.id}
-            src={confettiImage}
-            style={{
-              '--confetti-delay': piece.delay,
-              '--confetti-drift': piece.drift,
-              '--confetti-duration': piece.duration,
-              '--confetti-left': piece.left,
-              '--confetti-size': piece.size,
-            }}
-          />
-        ))}
-      </div>
-
       <main className="app-shell">
       <header className="brand-header">
         <p>Kişiye özel renk seçimi</p>
@@ -162,7 +213,7 @@ function App() {
                 aria-pressed={isDiscoMode}
                 title={isDiscoMode ? 'Disko modunu kapat' : 'Disko modu'}
               >
-                🪩
+                <img src={discoGif} alt="" />
               </button>
             </div>
           </div>
