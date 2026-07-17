@@ -136,7 +136,11 @@ export function applyConfiguredColors(context, model, config, lineArtImage) {
     fillSeeds(section.seeds, config[section.key].hex, section.tolerance ?? defaultFillTolerance, section.maxFillPixels);
   });
 
-  (model.fixedSections ?? []).forEach((section) => {
+  const fixedSections = model.fixedSections ?? [];
+  const preLineArtSections = fixedSections.filter((section) => !section.paintAfterLineArt);
+  const postLineArtSections = fixedSections.filter((section) => section.paintAfterLineArt);
+
+  preLineArtSections.forEach((section) => {
     fillSeeds(section.seeds, section.color, section.tolerance ?? 64, section.maxFillPixels);
   });
 
@@ -144,5 +148,15 @@ export function applyConfiguredColors(context, model, config, lineArtImage) {
   context.globalCompositeOperation = 'multiply';
   context.drawImage(lineArtImage, 0, 0, canvasSize.width, canvasSize.height);
   context.globalCompositeOperation = 'source-over';
+
+  if (postLineArtSections.length > 0) {
+    imageData = context.getImageData(0, 0, canvasSize.width, canvasSize.height);
+
+    postLineArtSections.forEach((section) => {
+      fillSeeds(section.seeds, section.color, section.tolerance ?? 64, section.maxFillPixels);
+    });
+
+    context.putImageData(imageData, 0, 0);
+  }
 }
 

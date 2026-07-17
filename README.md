@@ -26,6 +26,34 @@ Netlify configuration is included in `netlify.toml`.
 
 After the GitHub repository is connected to Netlify, every push to the `main` branch triggers a new deploy.
 
+## Hosting Under /loop
+
+The Vite config uses `base: './'`, so production assets are emitted with relative paths. That lets the same `dist` folder work both at a root domain and under a subpath such as:
+
+```text
+https://ekinbarut.com/loop/
+```
+
+To host it there, copy the contents of `dist` into the web server's `/loop` directory. If a router is added later, configure its basename as `/loop` for this deployment target.
+
+## S3 CI/CD
+
+The GitHub Actions workflow at `.github/workflows/deploy-s3.yml` builds the app and uploads it to:
+
+```text
+s3://$S3_BUCKET/loop/
+```
+
+Add these repository secrets in GitHub under **Settings -> Secrets and variables -> Actions -> New repository secret**:
+
+- `AWS_ACCESS_KEY_ID`: AWS access key for the deploy user.
+- `AWS_SECRET_ACCESS_KEY`: AWS secret key for the deploy user.
+- `AWS_REGION`: bucket region, for example `eu-central-1`.
+- `S3_BUCKET`: bucket name only, without `s3://`.
+- `CLOUDFRONT_DISTRIBUTION_ID`: optional; add it only if `ekinbarut.com` is served through CloudFront and you want automatic cache invalidation.
+
+Minimum IAM permissions for the deploy user should include `s3:ListBucket` on the bucket and `s3:GetObject`, `s3:PutObject`, `s3:DeleteObject` on `arn:aws:s3:::YOUR_BUCKET/loop/*`. If using CloudFront invalidation, also allow `cloudfront:CreateInvalidation` for the distribution.
+
 ## Project Structure
 
 ```text

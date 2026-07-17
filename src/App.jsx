@@ -8,8 +8,10 @@ import { bagModels, buildDefaultConfig, buildDefaultConfigsByModel, paintColors 
 import { enablePreviewDebug } from './constants/preview.js';
 import discoGif from './assets/old/giphy.gif';
 import discoMusic from './assets/old/music.mp3';
+import loopLogo from './assets/old/loop.png';
 
 const whatsappPhoneNumber = '905454179089';
+const shopierUrl = 'https://www.shopier.com/loopdesignbags';
 const partyBurstCount = 50;
 const partyMinDelayMs = 1000;
 const partyMaxDelayMs = 3000;
@@ -181,8 +183,7 @@ function App() {
 
       <main className="app-shell">
       <header className="brand-header">
-        <p>Kişiye özel renk seçimi</p>
-        <h1>Loop</h1>
+        <img className="brand-logo" src={loopLogo} alt="Loop" />
       </header>
 
       <section className="mobile-model-panel" aria-label="Mobil çanta modeli seçimi">
@@ -200,7 +201,6 @@ function App() {
 
         <section className="controls-card" aria-label="Özelleştirme kontrolleri">
           <div className="controls-heading">
-            <h2>Renkleri seç</h2>
             <div className="random-actions">
               <button className="text-button" type="button" onClick={randomizeSelectedModel}>
                 Rastgele
@@ -258,6 +258,9 @@ function App() {
               </span>
               WhatsApp ile gönder
             </button>
+            <a className="shopier-link" href={shopierUrl} target="_blank" rel="noreferrer">
+              Mağazaya git
+            </a>
           </div>
 
           <div aria-live="polite" className="copy-status">
