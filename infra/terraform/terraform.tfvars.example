@@ -1,0 +1,24 @@
+aws_region   = "eu-central-1"
+aws_profile  = "" # Optional locally, for example: "loop"
+project_name = "loop-configurator"
+
+deploy_targets = {
+  primary = {
+    bucket_name                 = "www.ekinbarut.com"
+    deploy_prefix               = "loop"
+    public_read                 = false
+    website_enabled            = false
+    cloudfront_distribution_arn = ""
+  }
+
+  secondary = {
+    bucket_name                 = "loop-configurator-prod"
+    deploy_prefix               = ""
+    public_read                 = false
+    website_enabled            = false
+    cloudfront_distribution_arn = ""
+  }
+}
+
+create_github_actions_deploy_user = true
+github_actions_deploy_user_name   = "loop-github-actions-deploy"

@@ -1,20 +1,26 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import confetti from 'canvas-confetti';
+import { BrandLogo } from './components/BrandLogo.jsx';
 import { ColorSwatchGroup } from './components/ColorSwatchGroup.jsx';
 import { ConfigSummary } from './components/ConfigSummary.jsx';
 import { ModelSelector } from './components/ModelSelector.jsx';
 import { ProductPreview } from './components/ProductPreview.jsx';
-import { bagModels, buildDefaultConfig, buildDefaultConfigsByModel, colorsForPalette } from './config/bagModels.js';
+import { bagModels, buildDefaultConfig, buildDefaultConfigsByModel, colorsForPalette, paintColors } from './config/bagModels.js';
 import { enablePreviewDebug } from './constants/preview.js';
 import discoGif from './assets/old/giphy.gif';
-import discoMusic from './assets/old/music.mp3';
-import loopLogo from './assets/old/loop.png';
+import discoMusic from './assets/old/music-short.m4a';
+import loopLogo from './assets/old/loop-transparent.png';
 
 const whatsappPhoneNumber = '905454179089';
 const shopierUrl = 'https://www.shopier.com/loopdesignbags';
 const partyBurstCount = 50;
 const partyMinDelayMs = 1000;
 const partyMaxDelayMs = 3000;
+
+function getRandomPaintColor() {
+  return paintColors[Math.floor(Math.random() * paintColors.length)];
+}
+
 function App() {
   const [selectedModelId, setSelectedModelId] = useState(bagModels[0].id);
   const [configsByModelId, setConfigsByModelId] = useState(() => buildDefaultConfigsByModel());
@@ -26,6 +32,7 @@ function App() {
   const partyIntervalRef = useRef(null);
   const partyTimeoutsRef = useRef([]);
   const [isDiscoMode, setIsDiscoMode] = useState(false);
+  const [logoDiscoColor, setLogoDiscoColor] = useState('');
 
   const selectedModel = bagModels.find((model) => model.id === selectedModelId) ?? bagModels[0];
   const config = configsByModelId[selectedModel.id];
@@ -96,6 +103,7 @@ function App() {
     clearPartyTimers();
     stopDiscoMusic();
     setIsDiscoMode(false);
+    setLogoDiscoColor('');
   };
 
   const getRandomConfettiOrigin = () => ({
@@ -128,6 +136,7 @@ function App() {
 
   const runDiscoTick = () => {
     randomizeSelectedModel();
+    setLogoDiscoColor(getRandomPaintColor().hex);
   };
 
   const toggleDiscoMode = () => {
@@ -183,7 +192,7 @@ function App() {
 
       <main className="app-shell">
       <header className="brand-header">
-        <img className="brand-logo" src={loopLogo} alt="Loop" />
+        <BrandLogo className="brand-logo" src={loopLogo} alt="Loop" discoColor={logoDiscoColor} />
       </header>
 
       <section className="mobile-model-panel" aria-label="Mobil çanta modeli seçimi">

@@ -76,7 +76,29 @@ button {
 .brand-logo {
   display: block;
   width: clamp(92px, 22vw, 148px);
-  height: auto;
+}
+
+.brand-logo-frame {
+  position: relative;
+  aspect-ratio: 1;
+}
+
+.brand-logo-static,
+.brand-logo-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.brand-logo-canvas {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 140ms ease;
+}
+
+.brand-logo-canvas.is-visible {
+  opacity: 1;
 }
 
 .configurator-layout {

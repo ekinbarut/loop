@@ -4,4 +4,17 @@ dist/
 *.log
 .env
 .env.*
+.envrc
+.aws/
 
+# Keep local AWS/project shell settings out of git.
+!.envrc.example
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+crash.*.log

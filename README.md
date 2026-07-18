@@ -62,6 +62,21 @@ Add as repository variables:
 
 Minimum IAM permissions for the deploy user should include `s3:ListBucket` on each target bucket. Object permissions should cover `arn:aws:s3:::PRIMARY_BUCKET/loop/*` for the primary bucket and `arn:aws:s3:::SECONDARY_BUCKET/*` for the secondary root bucket. If using CloudFront invalidation, also allow `cloudfront:CreateInvalidation` for each distribution.
 
+## Infrastructure
+
+AWS infrastructure is scaffolded under `infra/terraform`. Use it to manage S3 deploy buckets, deploy IAM permissions, and future backend resources such as Lambda, API Gateway, Secrets Manager, and DynamoDB.
+
+Start with:
+
+```bash
+cd infra/terraform
+cp terraform.tfvars.example terraform.tfvars
+terraform init
+terraform plan
+```
+
+Do not commit `terraform.tfvars` or Terraform state files.
+
 ## Project Structure
 
 ```text

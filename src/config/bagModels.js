@@ -56,7 +56,7 @@ export function colorsForPalette(palette) {
 export const bagModels = [
   {
     id: "canta3",
-    name: "Loop Barrel Pack",
+    name: "Barrel Pack",
     lineArt: canta3Lines,
     sections: [
       {
@@ -264,7 +264,7 @@ export const bagModels = [
   },
   {
     id: "canta2",
-    name: "Loop Roll Pack",
+    name: "Roll Pack",
     lineArt: canta2Lines,
     sections: [
       {
@@ -543,7 +543,7 @@ export const bagModels = [
   },
   {
     id: "canta1",
-    name: "Loop Waist Pack",
+    name: "Waist Pack",
     lineArt: canta1Lines,
     sections: [
       {
