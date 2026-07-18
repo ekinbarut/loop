@@ -7,3 +7,9 @@ export AWS_CONFIG_FILE="$LOOP_PROJECT_ROOT/.aws/config"
 export AWS_PROFILE=loop
 export AWS_REGION=eu-central-1
 export AWS_DEFAULT_REGION=eu-central-1
+
+# Public Google Sheet CSV URL for product cards. Do not put API keys here.
+# export VITE_PRODUCTS_CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vR121KjpdZaRNtl-qNcjOjdPGWJodW4zfNZj_3JH4DHCBiebLdSLYGmzGcKVh6MZ5J0hqudP17kpEKz/pub?output=csv"
+
+# Optional public JSON endpoint alternative.
+# export VITE_SHOPIER_PRODUCTS_ENDPOINT="https://api.example.com/products"

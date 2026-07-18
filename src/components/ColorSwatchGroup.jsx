@@ -1,10 +1,11 @@
-export function ColorSwatchGroup({ label, options, selected, onSelect }) {
+export function ColorSwatchGroup({ getColorName, label, options, selected, swatchAriaLabel, onSelect }) {
   return (
     <fieldset className="swatch-group">
       <legend>{label}</legend>
       <div className="paint-palette">
         {options.map((color) => {
           const isSelected = selected.name === color.name;
+          const colorName = getColorName(color);
 
           return (
             <button
@@ -12,9 +13,9 @@ export function ColorSwatchGroup({ label, options, selected, onSelect }) {
               key={color.name}
               type="button"
               onClick={() => onSelect(color)}
-              aria-label={`${label} rengini ${color.name} yap`}
+              aria-label={swatchAriaLabel(label, colorName)}
               aria-pressed={isSelected}
-              title={color.name}
+              title={colorName}
             >
               <span style={{ backgroundColor: color.hex }} />
             </button>
@@ -24,4 +25,3 @@ export function ColorSwatchGroup({ label, options, selected, onSelect }) {
     </fieldset>
   );
 }
-

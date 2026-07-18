@@ -2,7 +2,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import { canvasSize, maxZoom, minZoom } from '../constants/preview.js';
 import { applyConfiguredColors } from '../utils/canvasFill.js';
 
-export const ProductPreview = forwardRef(function ProductPreview({ config, model, resetKey, debugEnabled }, ref) {
+export const ProductPreview = forwardRef(function ProductPreview({ config, model, resetKey, debugEnabled, t }, ref) {
   const canvasRef = useRef(null);
   const fullscreenImageRef = useRef(null);
   const pointersRef = useRef(new Map());
@@ -258,9 +258,9 @@ export const ProductPreview = forwardRef(function ProductPreview({ config, model
   };
 
   return (
-    <section className="preview-card" aria-label={`${model.name} renk önizlemesi`}>
+    <section className="preview-card" aria-label={t('previewLabel', { model: model.name })}>
       {debugEnabled && (
-        <div className="preview-tools" aria-label="Önizleme araçları">
+        <div className="preview-tools" aria-label={t('previewTools')}>
           <button type="button" onClick={() => setZoom((currentZoom) => Math.max(minZoom, currentZoom - 0.5))}>
             -
           </button>
@@ -275,10 +275,10 @@ export const ProductPreview = forwardRef(function ProductPreview({ config, model
               setPan({ x: 0, y: 0 });
             }}
           >
-            Sıfırla
+            {t('reset')}
           </button>
           <button type="button" onClick={openFullscreen}>
-            Tam ekran
+            {t('fullscreen')}
           </button>
         </div>
       )}
@@ -295,7 +295,7 @@ export const ProductPreview = forwardRef(function ProductPreview({ config, model
           style={debugEnabled ? { transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` } : undefined}
         >
           <canvas
-            aria-label={`${model.name} renkli çizim`}
+            aria-label={t('colorDrawingLabel', { model: model.name })}
             className="paint-canvas"
             height={canvasSize.height}
             ref={canvasRef}
@@ -306,11 +306,11 @@ export const ProductPreview = forwardRef(function ProductPreview({ config, model
       </div>
 
       {debugEnabled && isFullscreen && (
-        <div className="fullscreen-preview" role="dialog" aria-modal="true" aria-label={`${model.name} tam ekran önizleme`}>
+        <div className="fullscreen-preview" role="dialog" aria-modal="true" aria-label={t('fullscreenPreview', { model: model.name })}>
           <div className="fullscreen-toolbar">
-            <p>{debugPoint ? `Son nokta: [${debugPoint.x}, ${debugPoint.y}],` : 'Koordinat almak için görsele tıkla.'}</p>
+            <p>{debugPoint ? t('lastPoint', debugPoint) : t('clickForCoordinateFullscreen')}</p>
             <button type="button" onClick={() => setIsFullscreen(false)}>
-              Kapat
+              {t('close')}
             </button>
           </div>
           <div
@@ -321,7 +321,7 @@ export const ProductPreview = forwardRef(function ProductPreview({ config, model
             onPointerCancel={handleFullscreenPointerUp}
           >
             <img
-              alt={`${model.name} tam ekran renkli çizim`}
+              alt={t('fullscreenColorDrawing', { model: model.name })}
               className="fullscreen-image"
               ref={fullscreenImageRef}
               src={fullscreenImage}
@@ -333,7 +333,7 @@ export const ProductPreview = forwardRef(function ProductPreview({ config, model
 
       {debugEnabled && (
         <p className="debug-point" aria-live="polite">
-          {debugPoint ? `Son nokta: [${debugPoint.x}, ${debugPoint.y}],` : 'Koordinat almak için önizlemeye tıkla.'}
+          {debugPoint ? t('lastPoint', debugPoint) : t('clickForCoordinatePreview')}
         </p>
       )}
     </section>

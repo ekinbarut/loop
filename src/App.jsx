@@ -5,8 +5,11 @@ import { ColorSwatchGroup } from './components/ColorSwatchGroup.jsx';
 import { ConfigSummary } from './components/ConfigSummary.jsx';
 import { ModelSelector } from './components/ModelSelector.jsx';
 import { ProductPreview } from './components/ProductPreview.jsx';
+import { ProductShowcase } from './components/ProductShowcase.jsx';
 import { bagModels, buildDefaultConfig, buildDefaultConfigsByModel, colorsForPalette, paintColors } from './config/bagModels.js';
 import { enablePreviewDebug } from './constants/preview.js';
+import { createTranslator, languages, translateColorName, translateSectionLabel } from './i18n.js';
+import { buildDynamicBackgroundTheme } from './utils/colorTheme.js';
 import discoGif from './assets/old/giphy.gif';
 import discoMusic from './assets/old/music-short.m4a';
 import loopLogo from './assets/old/loop-transparent.png';
@@ -17,11 +20,20 @@ const partyBurstCount = 50;
 const partyMinDelayMs = 1000;
 const partyMaxDelayMs = 3000;
 
+function getSavedLanguage() {
+  if (typeof window === 'undefined') {
+    return 'tr';
+  }
+
+  return window.localStorage.getItem('loop-language') || 'tr';
+}
+
 function getRandomPaintColor() {
   return paintColors[Math.floor(Math.random() * paintColors.length)];
 }
 
 function App() {
+  const [language, setLanguage] = useState(getSavedLanguage);
   const [selectedModelId, setSelectedModelId] = useState(bagModels[0].id);
   const [configsByModelId, setConfigsByModelId] = useState(() => buildDefaultConfigsByModel());
   const [resetKey, setResetKey] = useState(0);
@@ -36,14 +48,18 @@ function App() {
 
   const selectedModel = bagModels.find((model) => model.id === selectedModelId) ?? bagModels[0];
   const config = configsByModelId[selectedModel.id];
+  const t = useMemo(() => createTranslator(language), [language]);
+  const getSectionLabel = (label) => translateSectionLabel(label, language);
+  const getColorName = (color) => translateColorName(color.name, language);
+  const dynamicTheme = useMemo(() => buildDynamicBackgroundTheme(config), [config]);
 
   const orderNote = useMemo(() => {
     const colorSummary = selectedModel.sections
-      .map((section) => `${section.label}: ${config[section.key].name}`)
+      .map((section) => getSectionLabel(section.label) + ': ' + getColorName(config[section.key]))
       .join(', ');
 
-    return `Merhaba, Loop özel çanta siparişi vermek istiyorum. Model: ${selectedModel.name}, ${colorSummary}. Görseli de mesaja ekledim.`;
-  }, [config, selectedModel]);
+    return t('orderNote', { model: selectedModel.name, summary: colorSummary });
+  }, [config, language, selectedModel, t]);
 
   const updateModel = (modelId) => {
     stopDiscoMode();
@@ -71,7 +87,7 @@ function App() {
 
     discoAudioRef.current.currentTime = 0;
     discoAudioRef.current.play().catch(() => {
-      setCopyStatus('Muzik otomatik baslatilamadi. Disco topuna tekrar dokunmayi dene.');
+      setCopyStatus(t('musicFailed'));
     });
   };
 
@@ -153,6 +169,11 @@ function App() {
     partyIntervalRef.current = window.setInterval(schedulePartyWave, partyMaxDelayMs);
   };
 
+  useEffect(() => {
+    window.localStorage.setItem('loop-language', language);
+    document.documentElement.lang = language;
+  }, [language]);
+
   useEffect(() => stopDiscoMode, []);
 
   const updateSectionColor = (sectionKey, color) => {
@@ -169,118 +190,140 @@ function App() {
   const copyOrderNote = async () => {
     try {
       await navigator.clipboard.writeText(orderNote);
-      setCopyStatus('Sipariş notu kopyalandı.');
+      setCopyStatus(t('orderCopied'));
     } catch {
-      setCopyStatus('Kopyalama başarısız oldu. Sipariş notunu elle seçip kopyalayabilirsin.');
+      setCopyStatus(t('copyFailed'));
     }
   };
 
   const downloadPreviewImage = () => {
-    previewRef.current?.downloadImage(`loop-${selectedModel.id}-siparis.png`);
-    setCopyStatus('Görsel indirildi. WhatsApp mesajına görseli ekleyebilirsin.');
+    previewRef.current?.downloadImage('loop-' + selectedModel.id + '-siparis.png');
+    setCopyStatus(t('imageDownloaded'));
   };
 
   const shareOnWhatsApp = () => {
-    const whatsappUrl = `https://wa.me/${whatsappPhoneNumber}?text=${encodeURIComponent(orderNote)}`;
+    const whatsappUrl = 'https://wa.me/' + whatsappPhoneNumber + '?text=' + encodeURIComponent(orderNote);
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-    setCopyStatus('WhatsApp mesajı açıldı. Görseli indirdiysen mesaja ekleyebilirsin.');
+    setCopyStatus(t('whatsappOpened'));
   };
 
   return (
     <>
-      <div className={`disco-backdrop${isDiscoMode ? ' is-active' : ''}`} aria-hidden="true" />
+      <div className="page-background" style={dynamicTheme} aria-hidden="true">
+        {Array.from({ length: 7 }, (_, index) => (
+          <span className={'background-circle circle-' + (index + 1)} key={index} />
+        ))}
+      </div>
+      <div className={'disco-backdrop' + (isDiscoMode ? ' is-active' : '')} aria-hidden="true" />
 
       <main className="app-shell">
-      <header className="brand-header">
-        <BrandLogo className="brand-logo" src={loopLogo} alt="Loop" discoColor={logoDiscoColor} />
-      </header>
-
-      <section className="mobile-model-panel" aria-label="Mobil çanta modeli seçimi">
-        <ModelSelector selectedModel={selectedModel} onSelect={updateModel} />
-      </section>
-
-      <div className="configurator-layout">
-        <ProductPreview
-          ref={previewRef}
-          config={config}
-          debugEnabled={enablePreviewDebug}
-          model={selectedModel}
-          resetKey={resetKey}
-        />
-
-        <section className="controls-card" aria-label="Özelleştirme kontrolleri">
-          <div className="controls-heading">
-            <div className="random-actions">
-              <button className="text-button" type="button" onClick={randomizeSelectedModel}>
-                Rastgele
-              </button>
+        <header className="brand-header">
+          <div className="language-switcher" aria-label="Language selection">
+            {languages.map((item) => (
               <button
-                className={`disco-button${isDiscoMode ? ' is-active' : ''}`}
+                className={'language-option' + (language === item.code ? ' is-active' : '')}
+                key={item.code}
                 type="button"
-                onClick={toggleDiscoMode}
-                aria-label={isDiscoMode ? 'Disko modunu kapat' : 'Disko modunu aç'}
-                aria-pressed={isDiscoMode}
-                title={isDiscoMode ? 'Disko modunu kapat' : 'Disko modu'}
+                onClick={() => setLanguage(item.code)}
+                aria-pressed={language === item.code}
               >
-                <img src={discoGif} alt="" />
+                {item.label}
               </button>
-            </div>
+            ))}
           </div>
+          <BrandLogo className="brand-logo" src={loopLogo} alt="Loop" discoColor={logoDiscoColor} />
+        </header>
 
-          <div className="desktop-model-selector">
-            <ModelSelector selectedModel={selectedModel} onSelect={updateModel} />
-          </div>
+        <section className="mobile-model-panel" aria-label={t('mobileModelSelection')}>
+          <ModelSelector selectedModel={selectedModel} onSelect={updateModel} t={t} />
+        </section>
 
-          {selectedModel.sections.map((section) => (
-            <ColorSwatchGroup
-              key={section.key}
-              label={section.label}
-              options={colorsForPalette(section.palette)}
-              selected={config[section.key]}
-              onSelect={(color) => updateSectionColor(section.key, color)}
-            />
-          ))}
-
-          <ConfigSummary
+        <div className="configurator-layout">
+          <ProductPreview
+            ref={previewRef}
             config={config}
-            selectedModel={selectedModel}
+            debugEnabled={enablePreviewDebug}
+            model={selectedModel}
+            resetKey={resetKey}
+            t={t}
           />
 
-          <section className="order-instructions" aria-labelledby="order-instructions-title">
-            <h2 id="order-instructions-title">Sipariş için</h2>
-            <ol>
-              <li>Görseli indir veya ekran görüntüsü al.</li>
-              <li>WhatsApp mesajını aç.</li>
-              <li>Görseli WhatsApp mesajına ekleyip gönder.</li>
-            </ol>
+          <section className="controls-card" aria-label={t('customizationControls')}>
+            <div className="controls-heading">
+              <div className="random-actions">
+                <button className="text-button" type="button" onClick={randomizeSelectedModel}>
+                  {t('randomize')}
+                </button>
+                <button
+                  className={'disco-button' + (isDiscoMode ? ' is-active' : '')}
+                  type="button"
+                  onClick={toggleDiscoMode}
+                  aria-label={isDiscoMode ? t('discoOff') : t('discoOn')}
+                  aria-pressed={isDiscoMode}
+                  title={isDiscoMode ? t('discoOff') : t('discoMode')}
+                >
+                  <img src={discoGif} alt="" />
+                </button>
+              </div>
+            </div>
+
+            <div className="desktop-model-selector">
+              <ModelSelector selectedModel={selectedModel} onSelect={updateModel} t={t} />
+            </div>
+
+            {selectedModel.sections.map((section) => (
+              <ColorSwatchGroup
+                key={section.key}
+                label={getSectionLabel(section.label)}
+                options={colorsForPalette(section.palette)}
+                selected={config[section.key]}
+                getColorName={getColorName}
+                swatchAriaLabel={(part, color) => t('setColor', { part, color })}
+                onSelect={(color) => updateSectionColor(section.key, color)}
+              />
+            ))}
+
+            <ConfigSummary
+              config={config}
+              getColorName={getColorName}
+              getSectionLabel={getSectionLabel}
+              selectedModel={selectedModel}
+              t={t}
+            />
+
+            <section className="order-instructions" aria-labelledby="order-instructions-title">
+              <h2 id="order-instructions-title">{t('orderTitle')}</h2>
+              <ol>
+                <li>{t('orderStepImage')}</li>
+                <li>{t('orderStepWhatsapp')}</li>
+                <li>{t('orderStepSend')}</li>
+              </ol>
+            </section>
+
+            <div className="action-row">
+              <button className="primary-button" type="button" onClick={downloadPreviewImage}>
+                {t('downloadImage')}
+              </button>
+              <button className="whatsapp-button" type="button" onClick={shareOnWhatsApp}>
+                <span className="whatsapp-icon" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" focusable="false">
+                    <path d="M16 3.2A12.8 12.8 0 0 0 5.1 22.7L3.5 28.8l6.3-1.6A12.8 12.8 0 1 0 16 3.2Zm0 2.4a10.4 10.4 0 1 1-5.3 19.3l-.4-.2-3.2.8.9-3.1-.3-.5A10.4 10.4 0 0 1 16 5.6Zm-5 5.7c-.2.5-.7 1.3-.7 2.4 0 1.4 1 3.4 2.8 5.2 2 2 4.4 3.2 6.2 3.2 1.1 0 2.2-.6 2.5-1.3.3-.6.5-1.3.4-1.5-.1-.2-.3-.3-.6-.5l-1.9-.9c-.3-.1-.5-.2-.8.2l-.8 1c-.2.3-.4.3-.8.1-.4-.2-1.6-.6-3-1.9-1.1-1-1.9-2.3-2.1-2.7-.2-.4 0-.6.2-.8l.6-.7c.2-.2.2-.4.3-.6.1-.2 0-.5 0-.7l-.9-2c-.2-.5-.5-.5-.7-.5h-.6Z" />
+                  </svg>
+                </span>
+                {t('sendWhatsApp')}
+              </button>
+            </div>
+
+            <div aria-live="polite" className="copy-status">
+              {copyStatus}
+            </div>
           </section>
+        </div>
 
-          <div className="action-row">
-            <button className="primary-button" type="button" onClick={downloadPreviewImage}>
-              Görseli indir
-            </button>
-            <button className="whatsapp-button" type="button" onClick={shareOnWhatsApp}>
-              <span className="whatsapp-icon" aria-hidden="true">
-                <svg viewBox="0 0 32 32" focusable="false">
-                  <path d="M16 3.2A12.8 12.8 0 0 0 5.1 22.7L3.5 28.8l6.3-1.6A12.8 12.8 0 1 0 16 3.2Zm0 2.4a10.4 10.4 0 1 1-5.3 19.3l-.4-.2-3.2.8.9-3.1-.3-.5A10.4 10.4 0 0 1 16 5.6Zm-5 5.7c-.2.5-.7 1.3-.7 2.4 0 1.4 1 3.4 2.8 5.2 2 2 4.4 3.2 6.2 3.2 1.1 0 2.2-.6 2.5-1.3.3-.6.5-1.3.4-1.5-.1-.2-.3-.3-.6-.5l-1.9-.9c-.3-.1-.5-.2-.8.2l-.8 1c-.2.3-.4.3-.8.1-.4-.2-1.6-.6-3-1.9-1.1-1-1.9-2.3-2.1-2.7-.2-.4 0-.6.2-.8l.6-.7c.2-.2.2-.4.3-.6.1-.2 0-.5 0-.7l-.9-2c-.2-.5-.5-.5-.7-.5h-.6Z" />
-                </svg>
-              </span>
-              WhatsApp ile gönder
-            </button>
-            <a className="shopier-link" href={shopierUrl} target="_blank" rel="noreferrer">
-              Mağazaya git
-            </a>
-          </div>
-
-          <div aria-live="polite" className="copy-status">
-            {copyStatus}
-          </div>
-        </section>
-      </div>
+        <ProductShowcase shopierUrl={shopierUrl} t={t} />
       </main>
     </>
   );
 }
 
 export default App;
-

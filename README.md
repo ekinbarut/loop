@@ -143,3 +143,60 @@ export const enablePreviewDebug = false;
 
 Temporarily set it to `true` when collecting new seed coordinates.
 
+## Product Catalog
+
+The product cards can be managed from a public Google Sheet CSV export. The app reads the URL from:
+
+```bash
+VITE_PRODUCTS_CSV_URL=https://docs.google.com/spreadsheets/d/e/2PACX-1vR121KjpdZaRNtl-qNcjOjdPGWJodW4zfNZj_3JH4DHCBiebLdSLYGmzGcKVh6MZ5J0hqudP17kpEKz/pub?output=csv
+```
+
+Recommended sheet columns:
+
+```text
+active,sortOrder,title,description,priceText,imageUrl,productUrl
+```
+
+Example row:
+
+```text
+TRUE,1,Loop Barrel Pack,Günlük kullanım için özel üretim çanta.,950 TL,https://example.com/image.jpg,https://www.shopier.com/...
+```
+
+How to get the Google Sheet link:
+
+1. Create a Google Sheet with the columns above.
+2. Use File > Share > Publish to web.
+3. Pick the product sheet tab.
+4. Choose CSV as the published format.
+5. Copy the published CSV URL into `VITE_PRODUCTS_CSV_URL`.
+
+Friend-facing editing rules:
+
+- One row is one product.
+- Set `active` to `TRUE` to show a product and `FALSE` to hide it.
+- Use `sortOrder` to control display order.
+- Put the public product image URL in `imageUrl`.
+- Put the Shopier product URL in `productUrl`.
+
+If no CSV URL is configured, the app falls back to `public/shopier-products.json` so local development and deploys still work.
+
+Do not put Shopier API keys in Vite environment variables. Vite variables are bundled into browser code.
+
+
+## Extract Shopier Products
+
+Shopier does not provide a reliable public product listing endpoint for this app. To help maintain the Google Sheet catalog, use the local extractor:
+
+```bash
+npm run extract:shopier
+```
+
+The script opens the Shopier store in your browser and copies an extractor snippet to the clipboard. After the page loads, paste the snippet into the browser DevTools Console. It will:
+
+- read visible product cards and JSON-LD product data when available,
+- create CSV with `active,sortOrder,title,description,priceText,imageUrl,productUrl`,
+- copy the CSV to clipboard,
+- download `loop-shopier-products.csv`.
+
+Paste the CSV into the Google Sheet that powers `VITE_PRODUCTS_CSV_URL`. Review the rows before publishing because Shopier markup can change.

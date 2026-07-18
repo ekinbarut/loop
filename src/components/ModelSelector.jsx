@@ -1,8 +1,8 @@
 import { bagModels } from '../config/bagModels.js';
 
-export function ModelSelector({ selectedModel, onSelect }) {
+export function ModelSelector({ selectedModel, onSelect, t }) {
   return (
-    <section className="model-selector" aria-label="Çanta modeli seç">
+    <section className="model-selector" aria-label={t('chooseBagModel')}>
       {bagModels.map((model) => (
         <button
           className={`model-button${selectedModel.id === model.id ? ' is-selected' : ''}`}
@@ -18,4 +18,3 @@ export function ModelSelector({ selectedModel, onSelect }) {
     </section>
   );
 }
-

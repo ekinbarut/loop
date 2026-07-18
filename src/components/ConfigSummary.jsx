@@ -1,16 +1,16 @@
-export function ConfigSummary({ config, selectedModel }) {
+export function ConfigSummary({ config, getColorName, getSectionLabel, selectedModel, t }) {
   return (
     <section className="summary" aria-labelledby="summary-title">
-      <h2 id="summary-title">Seçimler</h2>
+      <h2 id="summary-title">{t('summaryTitle')}</h2>
       <dl>
         <div>
-          <dt>Model</dt>
+          <dt>{t('model')}</dt>
           <dd>{selectedModel.name}</dd>
         </div>
         {selectedModel.sections.map((section) => (
           <div key={section.key}>
-            <dt>{section.label}</dt>
-            <dd>{config[section.key].name}</dd>
+            <dt>{getSectionLabel(section.label)}</dt>
+            <dd>{getColorName(config[section.key])}</dd>
           </div>
         ))}
       </dl>
