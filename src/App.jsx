@@ -4,7 +4,7 @@ import { ColorSwatchGroup } from './components/ColorSwatchGroup.jsx';
 import { ConfigSummary } from './components/ConfigSummary.jsx';
 import { ModelSelector } from './components/ModelSelector.jsx';
 import { ProductPreview } from './components/ProductPreview.jsx';
-import { bagModels, buildDefaultConfig, buildDefaultConfigsByModel, paintColors } from './config/bagModels.js';
+import { bagModels, buildDefaultConfig, buildDefaultConfigsByModel, colorsForPalette } from './config/bagModels.js';
 import { enablePreviewDebug } from './constants/preview.js';
 import discoGif from './assets/old/giphy.gif';
 import discoMusic from './assets/old/music.mp3';
@@ -226,7 +226,7 @@ function App() {
             <ColorSwatchGroup
               key={section.key}
               label={section.label}
-              options={paintColors}
+              options={colorsForPalette(section.palette)}
               selected={config[section.key]}
               onSelect={(color) => updateSectionColor(section.key, color)}
             />

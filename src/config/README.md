@@ -24,7 +24,8 @@ Add a section:
 {
   key: 'color6',
   label: 'Yeni panel',
-  defaultColor: 'Saks Mavisi',
+  palette: 'fabric',
+  defaultColor: 'İmperteks mavi',
   seeds: [
     [472, 833],
     [549, 691],
@@ -37,7 +38,8 @@ Rules:
 - `key` must be unique within the model.
 - Use `color1`, `color2`, `color3`, etc. for simple ordering.
 - `label` is shown in the customer-facing UI.
-- `defaultColor` is mainly a reference value; initial colors are randomized per model and kept unique within that model.
+- `palette` controls which colors the customer sees for this section. Use `'fabric'` for Imperteks fabric parts and `'strap'` for kolon/strap parts.
+- `defaultColor` should come from the matching palette; initial colors are randomized per model and kept unique by hex when possible.
 - `seeds` are `[x, y]` canvas coordinates logged from preview debug clicks.
 - A section can contain as many seeds as needed.
 
@@ -49,7 +51,8 @@ If a seed leaks into the background or another large area, add a lower pixel lim
 {
   key: 'color6',
   label: 'Yeni panel',
-  defaultColor: 'Saks Mavisi',
+  palette: 'fabric',
+  defaultColor: 'İmperteks mavi',
   maxFillPixels: 90000,
   seeds: [[472, 833]],
 }
@@ -65,7 +68,7 @@ Use `fixedSections` for areas that should always be painted but should not appea
 fixedSections: [
   {
     label: 'Sabit siyah detaylar',
-    color: 'Siyah',
+    color: 'İmperteks siyah',
     seeds: [
       [100, 200],
       [140, 260],
@@ -74,7 +77,7 @@ fixedSections: [
 ],
 ```
 
-`color` can be a palette color name like `'Siyah'` or a hex color like `'#050505'`.
+`color` can be a palette color name like `'İmperteks siyah'` or a hex color like `'#050505'`.
 
 Fixed regions are painted after user-editable regions, so they win when coordinates overlap.
 
@@ -83,19 +86,25 @@ You can also set a custom fill tolerance:
 ```js
 {
   label: 'Sabit siyah detaylar',
-  color: 'Siyah',
+  color: 'İmperteks siyah',
   tolerance: 160,
   seeds: [[100, 200]],
 }
 ```
 
-## Color Palette
+## Color Palettes
 
-Colors live in `paintColors`:
+Editable sections use one of two palettes:
+
+- `fabricColors`: Imperteks fabric colors for bag body/panel sections.
+- `strapColors`: kolon colors for strap/webbing sections.
+
+`paintColors` is still exported as the combined list so fixed regions can resolve named colors, but customer-facing swatches come from each section's `palette` value.
+
+Examples:
 
 ```js
-{ name: 'Saks Mavisi', hex: '#2169D8' },
+{ name: 'İmperteks mavi', hex: '#0f0da1' }
+{ name: 'Kolon saks mavisi', hex: '#010e91' }
 ```
-
-The app only shows colors from that list.
 

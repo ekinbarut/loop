@@ -38,21 +38,29 @@ To host it there, copy the contents of `dist` into the web server's `/loop` dire
 
 ## S3 CI/CD
 
-The GitHub Actions workflow at `.github/workflows/deploy-s3.yml` builds the app and uploads it to:
+The GitHub Actions workflow at `.github/workflows/deploy-s3.yml` builds the app once and uploads it to two optional targets:
 
 ```text
 s3://$S3_BUCKET/loop/
+s3://$S3_BUCKET_SECONDARY/
 ```
 
-Add these repository secrets in GitHub under **Settings -> Secrets and variables -> Actions -> New repository secret**:
+Add the secrets and variables in GitHub under **Settings -> Secrets and variables -> Actions**:
+
+Add as repository secrets:
 
 - `AWS_ACCESS_KEY_ID`: AWS access key for the deploy user.
 - `AWS_SECRET_ACCESS_KEY`: AWS secret key for the deploy user.
-- `AWS_REGION`: bucket region, for example `eu-central-1`.
-- `S3_BUCKET`: bucket name only, without `s3://`.
-- `CLOUDFRONT_DISTRIBUTION_ID`: optional; add it only if `ekinbarut.com` is served through CloudFront and you want automatic cache invalidation.
 
-Minimum IAM permissions for the deploy user should include `s3:ListBucket` on the bucket and `s3:GetObject`, `s3:PutObject`, `s3:DeleteObject` on `arn:aws:s3:::YOUR_BUCKET/loop/*`. If using CloudFront invalidation, also allow `cloudfront:CreateInvalidation` for the distribution.
+Add as repository variables:
+
+- `AWS_REGION`: bucket region, for example `eu-central-1`.
+- `S3_BUCKET`: primary bucket name only, without `s3://`; this deploys under `/loop`.
+- `S3_BUCKET_SECONDARY`: optional secondary bucket name only, without `s3://`; this deploys at the bucket root.
+- `CLOUDFRONT_DISTRIBUTION_ID`: optional primary CloudFront distribution id; invalidates `/loop/*`.
+- `CLOUDFRONT_DISTRIBUTION_ID_SECONDARY`: optional secondary CloudFront distribution id; invalidates `/*`.
+
+Minimum IAM permissions for the deploy user should include `s3:ListBucket` on each target bucket. Object permissions should cover `arn:aws:s3:::PRIMARY_BUCKET/loop/*` for the primary bucket and `arn:aws:s3:::SECONDARY_BUCKET/*` for the secondary root bucket. If using CloudFront invalidation, also allow `cloudfront:CreateInvalidation` for each distribution.
 
 ## Project Structure
 

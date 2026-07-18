@@ -7,7 +7,7 @@ const duffelMeshSeeds = fillRegionsReport["canta3-duffel-mesh"].map(
   (region) => region.seed,
 );
 
-export const paintColors = [
+export const fabricColors = [
   { name: "İmperteks koyu sarı", hex: "#edc928" },
   { name: "İmperteks koyu gri", hex: "#525a5e" },
   { name: "İmperteks mor", hex: "#5e207d" },
@@ -27,6 +27,9 @@ export const paintColors = [
   { name: "İmperteks fuşya", hex: "#780a48" },
   { name: "İmperteks fıstık yeşili", hex: "#89e344" },
   { name: "İmperteks beyaz", hex: "#ffffff" },
+];
+
+export const strapColors = [
   { name: "Kolon siyah", hex: "#030303" },
   { name: "Kolon açık gri", hex: "#a0a5a8" },
   { name: "Kolon haki", hex: "#435438" },
@@ -44,6 +47,12 @@ export const paintColors = [
   { name: "Kolon bej", hex: "#f7f7e9" },
 ];
 
+export const paintColors = [...fabricColors, ...strapColors];
+
+export function colorsForPalette(palette) {
+  return palette === "strap" ? strapColors : fabricColors;
+}
+
 export const bagModels = [
   {
     id: "canta3",
@@ -53,6 +62,7 @@ export const bagModels = [
       {
         key: "color1",
         label: "Ana Gövde",
+        palette: "fabric",
         defaultColor: "İmperteks haki",
         seeds: [
           [650, 720],
@@ -75,6 +85,7 @@ export const bagModels = [
       {
         key: "color2",
         label: "Fermuar Paneli",
+        palette: "fabric",
         defaultColor: "İmperteks siyah",
         seeds: [
           [560, 490],
@@ -84,7 +95,8 @@ export const bagModels = [
       {
         key: "color3",
         label: "Yan Panel",
-        defaultColor: "Kolon kiremit rengi",
+        palette: "fabric",
+        defaultColor: "İmperteks turuncu",
         seeds: [
           [175, 710],
           [979, 494],
@@ -142,7 +154,8 @@ export const bagModels = [
       {
         key: "color4",
         label: "Şerit Kolonlar",
-        defaultColor: "İmperteks lacivert",
+        palette: "strap",
+        defaultColor: "Kolon lacivert",
         seeds: [
           [570, 557],
           [848, 473],
@@ -154,7 +167,8 @@ export const bagModels = [
       {
         key: "color5",
         label: "D Halka Bağlantı Kolonları",
-        defaultColor: "İmperteks siyah",
+        palette: "strap",
+        defaultColor: "Kolon siyah",
         seeds: [
           [209, 547],
           [884, 313],
@@ -256,6 +270,7 @@ export const bagModels = [
       {
         key: "color1",
         label: "Ön Dış Çapraz Paneller",
+        palette: "fabric",
         defaultColor: "İmperteks haki",
         seeds: [
           [571, 296],
@@ -265,7 +280,8 @@ export const bagModels = [
       },
       {
         key: "color2",
-        label: "Õn İç Çapraz Paneller",
+        label: "Ön İç Çapraz Paneller",
+        palette: "fabric",
         defaultColor: "İmperteks bej",
         seeds: [
           [709, 587],
@@ -275,12 +291,26 @@ export const bagModels = [
       {
         key: "color3",
         label: "Logo Paneli",
-        defaultColor: "Kolon kiremit rengi",
+        palette: "fabric",
+        defaultColor: "İmperteks kahverengi",
         seeds: [[684, 674]],
+      },
+      {
+        key: "color5",
+        label: "Taban/Alt Yan Paneller",
+        palette: "fabric",
+        defaultColor: "İmperteks fuşya",
+        seeds: [
+          [873, 982],
+          [207, 983],
+          [464, 1180],
+          [668, 1173],
+        ],
       },
       {
         key: "color4",
         label: "Üst Yan Paneller",
+        palette: "fabric",
         defaultColor: "İmperteks lacivert",
         seeds: [
           [160, 430],
@@ -290,19 +320,9 @@ export const bagModels = [
         ],
       },
       {
-        key: "color5",
-        label: "Taban/Alt Yan Paneller",
-        defaultColor: "Kolon bordo",
-        seeds: [
-          [873, 982],
-          [207, 983],
-          [464, 1180],
-          [668, 1173],
-        ],
-      },
-      {
         key: "color6",
         label: "Bağlantı Kolonları",
+        palette: "strap",
         defaultColor: "Kolon saks mavisi",
         seeds: [
           [549, 581],
@@ -313,8 +333,9 @@ export const bagModels = [
       },
       {
         key: "color7",
-        label: "Askı Kolonları",
-        defaultColor: "Kolon saks mavisi",
+        label: "Askı Kolonu",
+        palette: "strap",
+        defaultColor: "Kolon siyah",
         seeds: [
           [165, 674],
           [909, 666],
@@ -528,6 +549,7 @@ export const bagModels = [
       {
         key: "color1",
         label: "Ön Cep Paneli",
+        palette: "fabric",
         defaultColor: "İmperteks haki",
         seeds: [
           [735, 775],
@@ -536,8 +558,36 @@ export const bagModels = [
         ],
       },
       {
+        key: "color6",
+        label: "Ön Panel",
+        palette: "fabric",
+        defaultColor: "İmperteks mavi",
+        seeds: [
+          [484, 818],
+          [1012, 750],
+        ],
+      },
+      {
+        key: "color4",
+        label: "Taban Paneli",
+        palette: "fabric",
+        defaultColor: "İmperteks lacivert",
+        seeds: [[414, 808]],
+      },
+      {
+        key: "color3",
+        label: "Üst Fermuar Paneli",
+        palette: "fabric",
+        defaultColor: "İmperteks kahverengi",
+        seeds: [
+          [472, 573],
+          [376, 560],
+        ],
+      },
+      {
         key: "color2",
         label: "Arka Panel ve Kulaklar",
+        palette: "fabric",
         defaultColor: "İmperteks bej",
         seeds: [
           [234, 709],
@@ -545,24 +595,10 @@ export const bagModels = [
         ],
       },
       {
-        key: "color3",
-        label: "Üst Fermuar Paneli",
-        defaultColor: "Kolon kiremit rengi",
-        seeds: [
-          [472, 573],
-          [376, 560],
-        ],
-      },
-      {
-        key: "color4",
-        label: "Taban Paneli",
-        defaultColor: "Kolon saks mavisi",
-        seeds: [[414, 808]],
-      },
-      {
         key: "color5",
         label: "Bel Kolonu",
-        defaultColor: "İmperteks koyu sarı",
+        palette: "strap",
+        defaultColor: "Kolon siyah",
         seeds: [
           [187, 554],
           [614, 431],
@@ -571,15 +607,6 @@ export const bagModels = [
           [55, 608],
           [337, 476],
           [330, 444],
-        ],
-      },
-      {
-        key: "color6",
-        label: "Ön Panel",
-        defaultColor: "İmperteks mavi",
-        seeds: [
-          [484, 818],
-          [1012, 750],
         ],
       },
     ],
@@ -650,34 +677,34 @@ export function colorByName(colorName) {
   );
 }
 
-function shuffledUniqueColors() {
-  const uniqueColors = [
-    ...new Map(paintColors.map((color) => [color.name, color])).values(),
-  ];
+function shuffledColors(colors) {
+  const shuffled = [...colors];
 
-  for (let index = uniqueColors.length - 1; index > 0; index -= 1) {
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
     const swapIndex = Math.floor(Math.random() * (index + 1));
-    [uniqueColors[index], uniqueColors[swapIndex]] = [
-      uniqueColors[swapIndex],
-      uniqueColors[index],
+    [shuffled[index], shuffled[swapIndex]] = [
+      shuffled[swapIndex],
+      shuffled[index],
     ];
   }
 
-  return uniqueColors;
+  return shuffled;
 }
 
 export function buildDefaultConfig(model) {
-  const sectionKeys = model.sections.map((section) => section.key);
-  const shuffledColors = shuffledUniqueColors();
-
-  if (sectionKeys.length > shuffledColors.length) {
-    throw new Error(
-      "Cannot randomize unique colors: section count exceeds palette size.",
-    );
-  }
+  const usedHexes = new Set();
 
   return Object.fromEntries(
-    sectionKeys.map((sectionKey, index) => [sectionKey, shuffledColors[index]]),
+    model.sections.map((section) => {
+      const shuffled = shuffledColors(colorsForPalette(section.palette));
+      const color =
+        shuffled.find((candidate) => !usedHexes.has(candidate.hex.toLowerCase())) ??
+        shuffled[0];
+
+      usedHexes.add(color.hex.toLowerCase());
+
+      return [section.key, color];
+    }),
   );
 }
 

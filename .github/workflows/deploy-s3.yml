@@ -13,8 +13,10 @@ jobs:
   deploy-s3:
     runs-on: ubuntu-latest
     env:
-      S3_BUCKET: ${{ vars.S3_BUCKET }}
-      CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+      S3_BUCKET_PRIMARY: ${{ vars.S3_BUCKET }}
+      S3_BUCKET_SECONDARY: ${{ vars.S3_BUCKET_SECONDARY }}
+      CLOUDFRONT_DISTRIBUTION_ID_PRIMARY: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+      CLOUDFRONT_DISTRIBUTION_ID_SECONDARY: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID_SECONDARY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,24 +40,54 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      - name: Upload immutable assets
+      - name: Upload primary bucket under /loop
         run: |
-          bucket="$(printf '%s' "$S3_BUCKET" | xargs)"
-          aws s3 sync dist/assets "s3://$bucket/loop/assets" \
-            --delete \
-            --cache-control "public, max-age=31536000, immutable"
+          bucket="$(printf '%s' "$S3_BUCKET_PRIMARY" | xargs)"
 
-      - name: Upload app shell
+          if [ -z "$bucket" ]; then
+            echo "S3_BUCKET is empty, skipping primary bucket."
+            exit 0
+          fi
+
+          echo "Deploying to s3://$bucket/loop"
+
+          aws s3 sync dist/assets "s3://$bucket/loop/assets"             --delete             --cache-control "public, max-age=31536000, immutable"
+
+          aws s3 sync dist "s3://$bucket/loop"             --delete             --exclude "assets/*"             --cache-control "no-cache"
+
+      - name: Upload secondary bucket at root
         run: |
-          bucket="$(printf '%s' "$S3_BUCKET" | xargs)"
-          aws s3 sync dist "s3://$bucket/loop" \
-            --delete \
-            --exclude "assets/*" \
-            --cache-control "no-cache"
+          bucket="$(printf '%s' "$S3_BUCKET_SECONDARY" | xargs)"
 
-      - name: Invalidate CloudFront cache
-        if: ${{ env.CLOUDFRONT_DISTRIBUTION_ID != '' }}
-        run: >-
-          aws cloudfront create-invalidation
-          --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID"
-          --paths "/loop/*"
+          if [ -z "$bucket" ]; then
+            echo "S3_BUCKET_SECONDARY is empty, skipping secondary bucket."
+            exit 0
+          fi
+
+          echo "Deploying to s3://$bucket/"
+
+          aws s3 sync dist/assets "s3://$bucket/assets"             --delete             --cache-control "public, max-age=31536000, immutable"
+
+          aws s3 sync dist "s3://$bucket"             --delete             --exclude "assets/*"             --cache-control "no-cache"
+
+      - name: Invalidate primary CloudFront cache
+        run: |
+          distribution_id="$(printf '%s' "$CLOUDFRONT_DISTRIBUTION_ID_PRIMARY" | xargs)"
+
+          if [ -z "$distribution_id" ]; then
+            echo "CLOUDFRONT_DISTRIBUTION_ID is empty, skipping primary invalidation."
+            exit 0
+          fi
+
+          aws cloudfront create-invalidation             --distribution-id "$distribution_id"             --paths "/loop/*"
+
+      - name: Invalidate secondary CloudFront cache
+        run: |
+          distribution_id="$(printf '%s' "$CLOUDFRONT_DISTRIBUTION_ID_SECONDARY" | xargs)"
+
+          if [ -z "$distribution_id" ]; then
+            echo "CLOUDFRONT_DISTRIBUTION_ID_SECONDARY is empty, skipping secondary invalidation."
+            exit 0
+          fi
+
+          aws cloudfront create-invalidation             --distribution-id "$distribution_id"             --paths "/*"
