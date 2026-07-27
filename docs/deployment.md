@@ -43,9 +43,12 @@ CLOUDFRONT_DISTRIBUTION_ID
 CLOUDFRONT_DISTRIBUTION_ID_SECONDARY
 VITE_SHOPIER_PRODUCTS_ENDPOINT
 VITE_PRODUCTS_CSV_URL
+VITE_COLORS_API_ENDPOINT
 ```
 
 `VITE_SHOPIER_PRODUCTS_ENDPOINT` should be set after Terraform creates the Shopier products API.
+
+`VITE_COLORS_API_ENDPOINT` should be set to the `colors_api_endpoint` Terraform output.
 
 For the `loopdesignbags.com` production site, use:
 
@@ -96,6 +99,25 @@ The production site module creates:
 - ACM certificate in `us-east-1`
 - Route 53 certificate validation and alias records
 - HTTPS and baseline security headers
+
+## Color admin
+
+The color editor is available at `/root/asli`. It stores CSV data in S3 through
+a Lambda/API Gateway endpoint. There is currently no login; the planned puzzle
+can be added to the frontend later.
+
+Set these values in `terraform.tfvars`:
+
+```hcl
+enable_colors_admin_api      = true
+colors_bucket_name           = "loopdesignbags.com"
+colors_object_key            = "data/colors.csv"
+colors_admin_allowed_origins = ["https://loopdesignbags.com", "https://www.loopdesignbags.com"]
+```
+
+After `terraform apply`, add the `colors_api_endpoint` output to the GitHub repository variable
+`VITE_COLORS_API_ENDPOINT` and deploy the site. The initial `colors.csv` is
+created once; Terraform and the S3 sync both leave later admin changes intact.
 
 Enable it only in the ignored local `terraform.tfvars`; do not hardcode
 account-specific hosted zone IDs in committed Terraform configuration.

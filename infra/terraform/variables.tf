@@ -91,3 +91,27 @@ variable "production_bucket_name" {
   type        = string
   default     = ""
 }
+
+variable "enable_colors_admin_api" {
+  description = "Create the authenticated color CSV management API."
+  type        = bool
+  default     = false
+}
+
+variable "colors_bucket_name" {
+  description = "Existing S3 bucket in which the mutable colors CSV is stored."
+  type        = string
+  default     = ""
+}
+
+variable "colors_object_key" {
+  description = "S3 object key for the mutable colors CSV."
+  type        = string
+  default     = "data/colors.csv"
+}
+
+variable "colors_admin_allowed_origins" {
+  description = "Exact browser origins allowed to call the colors API."
+  type        = list(string)
+  default     = ["*"]
+}

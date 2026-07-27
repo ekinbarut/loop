@@ -14,3 +14,7 @@ export AWS_DEFAULT_REGION=eu-central-1
 # Optional public JSON endpoint alternative.
 # Prefer this for production once the Terraform API is enabled.
 # export VITE_SHOPIER_PRODUCTS_ENDPOINT="https://your-api-id.execute-api.eu-central-1.amazonaws.com/products"
+
+# Colors API created by infra/terraform/colors-admin.tf.
+# This endpoint serves the public CSV and accepts authenticated admin updates.
+# export VITE_COLORS_API_ENDPOINT="https://your-api-id.execute-api.eu-central-1.amazonaws.com/colors"

@@ -51,3 +51,8 @@ output "production_site_url" {
   description = "Canonical HTTPS URL of the production site."
   value       = var.enable_production_site ? "https://${var.production_domain_name}" : null
 }
+
+output "colors_api_endpoint" {
+  description = "Endpoint for the VITE_COLORS_API_ENDPOINT variable."
+  value       = var.enable_colors_admin_api ? "${aws_apigatewayv2_api.colors_admin[0].api_endpoint}/colors" : null
+}

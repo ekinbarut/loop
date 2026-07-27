@@ -20,6 +20,7 @@ jobs:
       VITE_SHOPIER_PRODUCTS_ENDPOINT: ${{ vars.VITE_SHOPIER_PRODUCTS_ENDPOINT }}
       VITE_PRODUCTS_CSV_URL: ${{ vars.VITE_PRODUCTS_CSV_URL }}
       VITE_COLORS_CSV_URL: ${{ vars.VITE_COLORS_CSV_URL }}
+      VITE_COLORS_API_ENDPOINT: ${{ vars.VITE_COLORS_API_ENDPOINT }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -71,7 +72,7 @@ jobs:
 
           aws s3 sync dist/assets "s3://$bucket/assets"             --delete             --cache-control "public, max-age=31536000, immutable"
 
-          aws s3 sync dist "s3://$bucket"             --delete             --exclude "assets/*"             --cache-control "no-cache"
+          aws s3 sync dist "s3://$bucket"             --delete             --exclude "assets/*"             --exclude "data/*"             --cache-control "no-cache"
 
       - name: Invalidate primary CloudFront cache
         run: |

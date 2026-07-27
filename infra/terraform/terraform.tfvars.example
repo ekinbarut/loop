@@ -28,3 +28,8 @@ shopier_access_token_secret_name  = "loop/shopier/access-token"
 shopier_access_token_secret_arn   = ""
 shopier_products_allowed_origins  = ["*"]
 shopier_products_limit            = 50
+
+enable_colors_admin_api      = false
+colors_bucket_name           = "loop-configurator-prod"
+colors_object_key            = "data/colors.csv"
+colors_admin_allowed_origins = ["https://loopdesignbags.com", "https://www.loopdesignbags.com"]

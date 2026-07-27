@@ -73,8 +73,8 @@ function csvToPalette(text) {
       hex: color.hex.trim(),
       palette: color.palette.trim().toLowerCase(),
       active: isActive(color.active),
-      sortOrder: Number(color.sortOrder) || index + 1,
-      note: color.note.trim(),
+      sortOrder: index + 1,
+      note: (color.note || '').trim(),
     }))
     .filter((color) => ['fabric', 'strap'].includes(color.palette) && color.name && /^#[0-9a-f]{6}$/i.test(color.hex))
     .sort((first, second) => first.sortOrder - second.sortOrder);
@@ -92,7 +92,7 @@ function csvToPalette(text) {
 }
 
 export async function fetchColorPalette({ signal } = {}) {
-  const endpoint = import.meta.env.VITE_COLORS_CSV_URL;
+  const endpoint = import.meta.env.VITE_COLORS_API_ENDPOINT || import.meta.env.VITE_COLORS_CSV_URL;
 
   if (!endpoint) {
     return fallbackPalette();

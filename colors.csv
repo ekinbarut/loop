@@ -1,35 +1,35 @@
-id,active,sortOrder,palette,nameTr,nameEn,hex,note
-imperteks-koyu-sari,TRUE,1,fabric,İmperteks koyu sarı,Impertex Dark Yellow,#edc928,
-imperteks-koyu-gri,TRUE,2,fabric,İmperteks koyu gri,Impertex Dark Gray,#525a5e,
-imperteks-mor,TRUE,3,fabric,İmperteks mor,Impertex Purple,#5e207d,
-imperteks-koyu-yesil,TRUE,4,fabric,İmperteks koyu yeşil,Impertex Dark Green,#174f2e,
-imperteks-turuncu,TRUE,5,fabric,İmperteks turuncu,Impertex Orange,#de6814,
-imperteks-siyah,TRUE,6,fabric,İmperteks siyah,Impertex Black,#030303,
-imperteks-bej,TRUE,7,fabric,İmperteks bej,Impertex Beige,#cdd1be,
-imperteks-cam-gobegi,TRUE,8,fabric,İmperteks cam göbeği,Impertex Turquoise,#1cd9d9,
-imperteks-acik-sari,TRUE,9,fabric,İmperteks açık sarı,Impertex Light Yellow,#ecf545,
-imperteks-kirmizi,TRUE,10,fabric,İmperteks kırmızı,Impertex Red,#c91634,
-imperteks-kahverengi,TRUE,11,fabric,İmperteks kahverengi,Impertex Brown,#3b271b,
-imperteks-seker-pembesi,TRUE,12,fabric,İmperteks şeker pembesi,Impertex Candy Pink,#eb50ad,
-imperteks-acik-gri,TRUE,13,fabric,İmperteks açık gri,Impertex Light Gray,#9a9b9c,
-imperteks-haki,TRUE,14,fabric,İmperteks haki,Impertex Khaki,#495739,
-imperteks-lacivert,TRUE,15,fabric,İmperteks lacivert,Impertex Navy,#1a1a3d,
-imperteks-mavi,TRUE,16,fabric,İmperteks mavi,Impertex Blue,#0f0da1,
-imperteks-fusya,TRUE,17,fabric,İmperteks fuşya,Impertex Fuchsia,#780a48,
-imperteks-fistik-yesili,TRUE,18,fabric,İmperteks fıstık yeşili,Impertex Pistachio Green,#89e344,
-imperteks-beyaz,TRUE,19,fabric,İmperteks beyaz,Impertex White,#ffffff,
-kolon-siyah,TRUE,1,strap,Kolon siyah,Webbing Black,#030303,
-kolon-acik-gri,TRUE,2,strap,Kolon açık gri,Webbing Light Gray,#a0a5a8,
-kolon-haki,TRUE,3,strap,Kolon haki,Webbing Khaki,#435438,
-kolon-su-yesili,TRUE,4,strap,Kolon su yeşili,Webbing Seafoam,#a0dbcd,
-kolon-kiremit-rengi,TRUE,5,strap,Kolon kiremit rengi,Webbing Brick,#873e03,
-kolon-acik-sari,TRUE,6,strap,Kolon açık sarı,Webbing Light Yellow,#ecf545,
-kolon-mor,TRUE,7,strap,Kolon mor,Webbing Purple,#82227c,
-kolon-bordo,TRUE,8,strap,Kolon bordo,Webbing Burgundy,#752031,
-kolon-kahverengi,TRUE,9,strap,Kolon kahverengi,Webbing Brown,#69513c,
-kolon-lacivert,TRUE,10,strap,Kolon lacivert,Webbing Navy,#2a2d4d,
-kolon-turuncu,TRUE,11,strap,Kolon turuncu,Webbing Orange,#de6814,
-kolon-saks-mavisi,TRUE,12,strap,Kolon saks mavisi,Webbing Royal Blue,#010e91,
-kolon-kirmizi,TRUE,13,strap,Kolon kırmızı,Webbing Red,#c40208,
-kolon-cimen-yesili,TRUE,14,strap,Kolon çimen yeşili,Webbing Grass Green,#076931,
-kolon-bej,TRUE,15,strap,Kolon bej,Webbing Beige,#f7f7e9,
+id,active,palette,nameTr,nameEn,hex
+imperteks-koyu-sari,TRUE,fabric,İmperteks koyu sarı,Impertex Dark Yellow,#edc928
+imperteks-koyu-gri,TRUE,fabric,İmperteks koyu gri,Impertex Dark Gray,#525a5e
+imperteks-mor,TRUE,fabric,İmperteks mor,Impertex Purple,#5e207d
+imperteks-koyu-yesil,TRUE,fabric,İmperteks koyu yeşil,Impertex Dark Green,#174f2e
+imperteks-turuncu,TRUE,fabric,İmperteks turuncu,Impertex Orange,#de6814
+imperteks-siyah,TRUE,fabric,İmperteks siyah,Impertex Black,#030303
+imperteks-bej,TRUE,fabric,İmperteks bej,Impertex Beige,#cdd1be
+imperteks-cam-gobegi,TRUE,fabric,İmperteks cam göbeği,Impertex Turquoise,#1cd9d9
+imperteks-acik-sari,TRUE,fabric,İmperteks açık sarı,Impertex Light Yellow,#ecf545
+imperteks-kirmizi,TRUE,fabric,İmperteks kırmızı,Impertex Red,#c91634
+imperteks-kahverengi,TRUE,fabric,İmperteks kahverengi,Impertex Brown,#3b271b
+imperteks-seker-pembesi,TRUE,fabric,İmperteks şeker pembesi,Impertex Candy Pink,#eb50ad
+imperteks-acik-gri,TRUE,fabric,İmperteks açık gri,Impertex Light Gray,#9a9b9c
+imperteks-haki,TRUE,fabric,İmperteks haki,Impertex Khaki,#495739
+imperteks-lacivert,TRUE,fabric,İmperteks lacivert,Impertex Navy,#1a1a3d
+imperteks-mavi,TRUE,fabric,İmperteks mavi,Impertex Blue,#0f0da1
+imperteks-fusya,TRUE,fabric,İmperteks fuşya,Impertex Fuchsia,#780a48
+imperteks-fistik-yesili,TRUE,fabric,İmperteks fıstık yeşili,Impertex Pistachio Green,#89e344
+imperteks-beyaz,TRUE,fabric,İmperteks beyaz,Impertex White,#ffffff
+kolon-siyah,TRUE,strap,Kolon siyah,Webbing Black,#030303
+kolon-acik-gri,TRUE,strap,Kolon açık gri,Webbing Light Gray,#a0a5a8
+kolon-haki,TRUE,strap,Kolon haki,Webbing Khaki,#435438
+kolon-su-yesili,TRUE,strap,Kolon su yeşili,Webbing Seafoam,#a0dbcd
+kolon-kiremit-rengi,TRUE,strap,Kolon kiremit rengi,Webbing Brick,#873e03
+kolon-acik-sari,TRUE,strap,Kolon açık sarı,Webbing Light Yellow,#ecf545
+kolon-mor,TRUE,strap,Kolon mor,Webbing Purple,#82227c
+kolon-bordo,TRUE,strap,Kolon bordo,Webbing Burgundy,#752031
+kolon-kahverengi,TRUE,strap,Kolon kahverengi,Webbing Brown,#69513c
+kolon-lacivert,TRUE,strap,Kolon lacivert,Webbing Navy,#2a2d4d
+kolon-turuncu,TRUE,strap,Kolon turuncu,Webbing Orange,#de6814
+kolon-saks-mavisi,TRUE,strap,Kolon saks mavisi,Webbing Royal Blue,#010e91
+kolon-kirmizi,TRUE,strap,Kolon kırmızı,Webbing Red,#c40208
+kolon-cimen-yesili,TRUE,strap,Kolon çimen yeşili,Webbing Grass Green,#076931
+kolon-bej,TRUE,strap,Kolon bej,Webbing Beige,#f7f7e9
