@@ -58,9 +58,14 @@ If you use `direnv`, copy the repo root `.envrc.example` to `.envrc` and run `di
 Then run:
 
 ```bash
-terraform init
+cp backend.hcl.example backend.hcl
+terraform init -backend-config=backend.hcl
 terraform plan
 ```
+
+`backend.hcl` is local and ignored because it contains account/profile-specific
+backend settings. The shared S3 backend uses versioning, encryption, public
+access blocking, and an S3 lock file to prevent concurrent applies.
 
 Only apply after reviewing the plan carefully:
 

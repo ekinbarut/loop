@@ -9,6 +9,7 @@ import { ProductShowcase } from './components/ProductShowcase.jsx';
 import { bagModels, buildDefaultConfig, buildDefaultConfigsByModel, colorsForPalette, paintColors } from './config/bagModels.js';
 import { enablePreviewDebug } from './constants/preview.js';
 import { createTranslator, languages, translateColorName, translateSectionLabel } from './i18n.js';
+import { fetchColorPalette } from './services/colorPalette.js';
 import { buildDynamicBackgroundTheme } from './utils/colorTheme.js';
 import discoGif from './assets/old/giphy.gif';
 import discoMusic from './assets/old/music-short.m4a';
@@ -28,14 +29,18 @@ function getSavedLanguage() {
   return window.localStorage.getItem('loop-language') || 'tr';
 }
 
-function getRandomPaintColor() {
-  return paintColors[Math.floor(Math.random() * paintColors.length)];
+function getRandomPaintColor(palettes) {
+  const availableColors = palettes
+    ? Object.values(palettes).flat().filter((color) => color.active !== false)
+    : paintColors;
+  return availableColors[Math.floor(Math.random() * availableColors.length)] ?? paintColors[0];
 }
 
 function App() {
   const [language, setLanguage] = useState(getSavedLanguage);
   const [selectedModelId, setSelectedModelId] = useState(bagModels[0].id);
   const [configsByModelId, setConfigsByModelId] = useState(() => buildDefaultConfigsByModel());
+  const [paletteColors, setPaletteColors] = useState(null);
   const [resetKey, setResetKey] = useState(0);
   const [copyStatus, setCopyStatus] = useState('');
   const previewRef = useRef(null);
@@ -50,7 +55,9 @@ function App() {
   const config = configsByModelId[selectedModel.id];
   const t = useMemo(() => createTranslator(language), [language]);
   const getSectionLabel = (label) => translateSectionLabel(label, language);
-  const getColorName = (color) => translateColorName(color.name, language);
+  const getColorName = (color) => language === 'en'
+    ? color.nameEn || translateColorName(color.name, language)
+    : color.name;
   const dynamicTheme = useMemo(() => buildDynamicBackgroundTheme(config), [config]);
 
   const orderNote = useMemo(() => {
@@ -71,7 +78,7 @@ function App() {
   const randomizeSelectedModel = () => {
     setConfigsByModelId((currentConfigs) => ({
       ...currentConfigs,
-      [selectedModel.id]: buildDefaultConfig(selectedModel),
+      [selectedModel.id]: buildDefaultConfig(selectedModel, paletteColors),
     }));
     setResetKey((currentKey) => currentKey + 1);
     setCopyStatus('');
@@ -152,7 +159,7 @@ function App() {
 
   const runDiscoTick = () => {
     randomizeSelectedModel();
-    setLogoDiscoColor(getRandomPaintColor().hex);
+    setLogoDiscoColor(getRandomPaintColor(paletteColors).hex);
   };
 
   const toggleDiscoMode = () => {
@@ -173,6 +180,40 @@ function App() {
     window.localStorage.setItem('loop-language', language);
     document.documentElement.lang = language;
   }, [language]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    fetchColorPalette({ signal: controller.signal })
+      .then((palettes) => {
+        setPaletteColors(palettes);
+        setConfigsByModelId((currentConfigs) => Object.fromEntries(
+          bagModels.map((model) => {
+            const currentConfig = currentConfigs[model.id];
+            const nextConfig = Object.fromEntries(model.sections.map((section) => {
+              const options = colorsForPalette(section.palette, palettes);
+              const currentColor = currentConfig[section.key];
+              const matchingColor = options.find((color) => color.name === currentColor.name);
+              const availableColor = options.find((color) => color.active !== false);
+
+              return [
+                section.key,
+                matchingColor && matchingColor.active !== false ? matchingColor : availableColor || currentColor,
+              ];
+            }));
+
+            return [model.id, nextConfig];
+          }),
+        ));
+      })
+      .catch((error) => {
+        if (error.name !== 'AbortError') {
+          console.warn('Color palette could not be initialized.', error);
+        }
+      });
+
+    return () => controller.abort();
+  }, []);
 
   useEffect(() => stopDiscoMode, []);
 
@@ -275,10 +316,11 @@ function App() {
               <ColorSwatchGroup
                 key={section.key}
                 label={getSectionLabel(section.label)}
-                options={colorsForPalette(section.palette)}
+                options={colorsForPalette(section.palette, paletteColors)}
                 selected={config[section.key]}
                 getColorName={getColorName}
                 swatchAriaLabel={(part, color) => t('setColor', { part, color })}
+                unavailableLabel={t('colorUnavailable')}
                 onSelect={(color) => updateSectionColor(section.key, color)}
               />
             ))}

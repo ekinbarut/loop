@@ -71,10 +71,15 @@ Common flow:
 
 ```bash
 cd infra/terraform
-terraform init
+terraform init -backend-config=backend.hcl
 terraform plan
 terraform apply
 ```
+
+Terraform state is stored remotely in the private
+`loop-terraform-state-157210390191` S3 bucket at `loop/terraform.tfstate`.
+S3 versioning protects earlier state revisions and `use_lockfile` prevents
+concurrent Terraform operations.
 
 Do not commit:
 

@@ -1,0 +1,6 @@
+bucket       = "loop-terraform-state-157210390191"
+key          = "loop/terraform.tfstate"
+region       = "eu-central-1"
+profile      = "loop"
+encrypt      = true
+use_lockfile = true

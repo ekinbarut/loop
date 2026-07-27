@@ -1,4 +1,12 @@
-export function ColorSwatchGroup({ getColorName, label, options, selected, swatchAriaLabel, onSelect }) {
+export function ColorSwatchGroup({
+  getColorName,
+  label,
+  options,
+  selected,
+  swatchAriaLabel,
+  unavailableLabel,
+  onSelect,
+}) {
   return (
     <fieldset className="swatch-group">
       <legend>{label}</legend>
@@ -6,16 +14,18 @@ export function ColorSwatchGroup({ getColorName, label, options, selected, swatc
         {options.map((color) => {
           const isSelected = selected.name === color.name;
           const colorName = getColorName(color);
+          const isUnavailable = color.active === false;
 
           return (
             <button
-              className={`paint-swatch${isSelected ? ' is-selected' : ''}`}
-              key={color.name}
+              className={`paint-swatch${isSelected ? ' is-selected' : ''}${isUnavailable ? ' is-unavailable' : ''}`}
+              key={color.id || color.name}
               type="button"
               onClick={() => onSelect(color)}
-              aria-label={swatchAriaLabel(label, colorName)}
+              aria-label={isUnavailable ? `${colorName}: ${unavailableLabel}` : swatchAriaLabel(label, colorName)}
               aria-pressed={isSelected}
-              title={colorName}
+              disabled={isUnavailable}
+              title={isUnavailable ? `${colorName} — ${unavailableLabel}` : colorName}
             >
               <span style={{ backgroundColor: color.hex }} />
             </button>

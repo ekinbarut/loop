@@ -49,8 +49,8 @@ export const strapColors = [
 
 export const paintColors = [...fabricColors, ...strapColors];
 
-export function colorsForPalette(palette) {
-  return palette === "strap" ? strapColors : fabricColors;
+export function colorsForPalette(palette, palettes) {
+  return palettes?.[palette] ?? (palette === "strap" ? strapColors : fabricColors);
 }
 
 export const bagModels = [
@@ -691,12 +691,14 @@ function shuffledColors(colors) {
   return shuffled;
 }
 
-export function buildDefaultConfig(model) {
+export function buildDefaultConfig(model, palettes) {
   const usedHexes = new Set();
 
   return Object.fromEntries(
     model.sections.map((section) => {
-      const shuffled = shuffledColors(colorsForPalette(section.palette));
+      const configuredColors = colorsForPalette(section.palette, palettes);
+      const availableColors = configuredColors.filter((color) => color.active !== false);
+      const shuffled = shuffledColors(availableColors.length > 0 ? availableColors : colorsForPalette(section.palette));
       const color =
         shuffled.find((candidate) => !usedHexes.has(candidate.hex.toLowerCase())) ??
         shuffled[0];
@@ -708,8 +710,8 @@ export function buildDefaultConfig(model) {
   );
 }
 
-export function buildDefaultConfigsByModel() {
+export function buildDefaultConfigsByModel(palettes) {
   return Object.fromEntries(
-    bagModels.map((model) => [model.id, buildDefaultConfig(model)]),
+    bagModels.map((model) => [model.id, buildDefaultConfig(model, palettes)]),
   );
 }
