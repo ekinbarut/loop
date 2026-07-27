@@ -26,7 +26,7 @@ export function ProductShowcase({ shopierUrl, t }) {
     <section className="product-showcase" aria-labelledby="product-showcase-title">
       <div className="product-showcase-heading">
         <div>
-          <p id="product-showcase-title">{t('shopLabel')} <span className="product-keyword">test</span></p>
+          <p id="product-showcase-title">{t('shopLabel')}</p>
         </div>
         <a className="shopier-link compact" href={shopierUrl} target="_blank" rel="noreferrer">
           {t('goToShop')}

@@ -67,3 +67,27 @@ variable "shopier_products_limit" {
   type        = number
   default     = 50
 }
+
+variable "enable_production_site" {
+  description = "Create private S3, CloudFront, ACM, and Route 53 resources for the production site."
+  type        = bool
+  default     = false
+}
+
+variable "production_domain_name" {
+  description = "Apex domain used for the production site."
+  type        = string
+  default     = ""
+}
+
+variable "production_hosted_zone_id" {
+  description = "Route 53 public hosted zone ID for the production domain."
+  type        = string
+  default     = ""
+}
+
+variable "production_bucket_name" {
+  description = "Globally unique private S3 bucket name used as the CloudFront origin."
+  type        = string
+  default     = ""
+}

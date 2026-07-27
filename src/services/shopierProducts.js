@@ -207,21 +207,30 @@ function cleanProducts(products) {
 export async function fetchShopierProducts({ signal } = {}) {
   const shopierEndpoint = import.meta.env.VITE_SHOPIER_PRODUCTS_ENDPOINT;
   const csvEndpoint = import.meta.env.VITE_PRODUCTS_CSV_URL;
-  const jsonEndpoint = shopierEndpoint || './shopier-products.json';
+  const sources = [
+    shopierEndpoint ? { type: 'json', endpoint: shopierEndpoint } : null,
+    csvEndpoint ? { type: 'csv', endpoint: csvEndpoint } : null,
+    { type: 'json', endpoint: './shopier-products.json' },
+  ].filter(Boolean);
 
-  try {
-    const rawProducts = shopierEndpoint || !csvEndpoint
-      ? await fetchJsonProducts(jsonEndpoint, signal)
-      : await fetchCsvProducts(csvEndpoint, signal);
-    const products = cleanProducts(rawProducts);
+  for (const source of sources) {
+    try {
+      const rawProducts = source.type === 'csv'
+        ? await fetchCsvProducts(source.endpoint, signal)
+        : await fetchJsonProducts(source.endpoint, signal);
+      const products = cleanProducts(rawProducts);
 
-    return products.length > 0 ? products : fallbackProducts;
-  } catch (error) {
-    if (error.name === 'AbortError') {
-      throw error;
+      if (products.length > 0) {
+        return products;
+      }
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        throw error;
+      }
+
+      console.warn(`Products could not be loaded from ${source.type} source. Trying the next fallback.`, error);
     }
-
-    console.warn('Products could not be loaded. Showing fallback products.', error);
-    return fallbackProducts;
   }
+
+  return fallbackProducts;
 }

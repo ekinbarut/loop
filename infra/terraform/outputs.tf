@@ -31,3 +31,23 @@ output "shopier_access_token_secret_name" {
   description = "Secrets Manager secret name for the Shopier access token, when Terraform creates it."
   value       = var.enable_shopier_products_api && var.shopier_access_token_secret_arn == "" ? aws_secretsmanager_secret.shopier_access_token[0].name : null
 }
+
+output "production_site_bucket_name" {
+  description = "Private S3 bucket used by the production CloudFront distribution."
+  value       = var.enable_production_site ? aws_s3_bucket.production_site[0].bucket : null
+}
+
+output "production_cloudfront_distribution_id" {
+  description = "CloudFront distribution ID used for cache invalidations."
+  value       = var.enable_production_site ? aws_cloudfront_distribution.production_site[0].id : null
+}
+
+output "production_cloudfront_domain_name" {
+  description = "CloudFront-generated domain name."
+  value       = var.enable_production_site ? aws_cloudfront_distribution.production_site[0].domain_name : null
+}
+
+output "production_site_url" {
+  description = "Canonical HTTPS URL of the production site."
+  value       = var.enable_production_site ? "https://${var.production_domain_name}" : null
+}

@@ -9,8 +9,24 @@ This scaffold currently manages:
 - Optional S3 static website configuration.
 - Optional public-read bucket policies for direct S3 website hosting.
 - A least-privilege IAM deploy user and policy for GitHub Actions.
+- An optional private S3 + CloudFront + ACM + Route 53 production site.
 
 It intentionally does **not** create IAM access keys. Create deploy access keys manually in AWS, then store them as GitHub repository secrets.
+
+## Production Domain Hosting
+
+Enable the private CloudFront-backed production site in `terraform.tfvars`:
+
+```hcl
+enable_production_site    = true
+production_domain_name    = "loopdesignbags.com"
+production_hosted_zone_id = "YOUR_ROUTE53_HOSTED_ZONE_ID"
+production_bucket_name    = "loopdesignbags.com"
+```
+
+The ACM certificate is created in `us-east-1`, as required by CloudFront. The
+S3 bucket remains private and grants read access only to its CloudFront
+distribution through Origin Access Control.
 
 ## First-Time Setup
 

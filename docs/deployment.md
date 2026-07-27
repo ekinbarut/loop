@@ -47,6 +47,18 @@ VITE_PRODUCTS_CSV_URL
 
 `VITE_SHOPIER_PRODUCTS_ENDPOINT` should be set after Terraform creates the Shopier products API.
 
+For the `loopdesignbags.com` production site, use:
+
+```text
+S3_BUCKET_SECONDARY=loopdesignbags.com
+CLOUDFRONT_DISTRIBUTION_ID_SECONDARY=EX6KYC0XQP8EB
+VITE_SHOPIER_PRODUCTS_ENDPOINT=https://y1bm8m7qql.execute-api.eu-central-1.amazonaws.com/products
+```
+
+The secondary deployment target uploads the Vite build to the private bucket root
+and invalidates the production CloudFront distribution. CloudFront is the only
+public reader of the bucket.
+
 ## Terraform
 
 Terraform lives in:
@@ -71,6 +83,17 @@ infra/terraform/terraform.tfvars
 *.tfstate
 *.tfstate.*
 ```
+
+The production site module creates:
+
+- private S3 origin bucket
+- CloudFront distribution with Origin Access Control
+- ACM certificate in `us-east-1`
+- Route 53 certificate validation and alias records
+- HTTPS and baseline security headers
+
+Enable it only in the ignored local `terraform.tfvars`; do not hardcode
+account-specific hosted zone IDs in committed Terraform configuration.
 
 ## Project-Local AWS Credentials
 
