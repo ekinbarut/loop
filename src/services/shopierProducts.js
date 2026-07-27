@@ -205,13 +205,14 @@ function cleanProducts(products) {
 }
 
 export async function fetchShopierProducts({ signal } = {}) {
+  const shopierEndpoint = import.meta.env.VITE_SHOPIER_PRODUCTS_ENDPOINT;
   const csvEndpoint = import.meta.env.VITE_PRODUCTS_CSV_URL;
-  const jsonEndpoint = import.meta.env.VITE_SHOPIER_PRODUCTS_ENDPOINT || './shopier-products.json';
+  const jsonEndpoint = shopierEndpoint || './shopier-products.json';
 
   try {
-    const rawProducts = csvEndpoint
-      ? await fetchCsvProducts(csvEndpoint, signal)
-      : await fetchJsonProducts(jsonEndpoint, signal);
+    const rawProducts = shopierEndpoint || !csvEndpoint
+      ? await fetchJsonProducts(jsonEndpoint, signal)
+      : await fetchCsvProducts(csvEndpoint, signal);
     const products = cleanProducts(rawProducts);
 
     return products.length > 0 ? products : fallbackProducts;

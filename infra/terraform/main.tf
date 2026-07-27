@@ -148,3 +148,148 @@ resource "aws_iam_user_policy_attachment" "github_actions_deploy" {
   user       = aws_iam_user.github_actions_deploy[0].name
   policy_arn = aws_iam_policy.github_actions_deploy[0].arn
 }
+
+locals {
+  shopier_access_token_secret_arn = var.shopier_access_token_secret_arn != "" ? var.shopier_access_token_secret_arn : try(aws_secretsmanager_secret.shopier_access_token[0].arn, "")
+}
+
+resource "aws_secretsmanager_secret" "shopier_access_token" {
+  count = var.enable_shopier_products_api && var.shopier_access_token_secret_arn == "" ? 1 : 0
+
+  name        = var.shopier_access_token_secret_name
+  description = "Shopier PAT/access token for Loop product listing API. Secret value is managed manually."
+  tags        = local.tags
+}
+
+data "archive_file" "shopier_products_lambda" {
+  count = var.enable_shopier_products_api ? 1 : 0
+
+  type        = "zip"
+  source_dir  = "${path.module}/../lambda/shopier-products"
+  output_path = "${path.module}/.terraform/shopier-products.zip"
+}
+
+resource "aws_iam_role" "shopier_products_lambda" {
+  count = var.enable_shopier_products_api ? 1 : 0
+
+  name = "${var.project_name}-shopier-products-lambda"
+  tags = local.tags
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "shopier_products_lambda" {
+  count = var.enable_shopier_products_api ? 1 : 0
+
+  name = "${var.project_name}-shopier-products-lambda"
+  role = aws_iam_role.shopier_products_lambda[0].id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "WriteLogs"
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "arn:aws:logs:*:*:*"
+      },
+      {
+        Sid    = "ReadShopierToken"
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ]
+        Resource = local.shopier_access_token_secret_arn
+      }
+    ]
+  })
+}
+
+resource "aws_lambda_function" "shopier_products" {
+  count = var.enable_shopier_products_api ? 1 : 0
+
+  function_name    = "${var.project_name}-shopier-products"
+  role             = aws_iam_role.shopier_products_lambda[0].arn
+  handler          = "index.handler"
+  runtime          = "nodejs22.x"
+  filename         = data.archive_file.shopier_products_lambda[0].output_path
+  source_code_hash = data.archive_file.shopier_products_lambda[0].output_base64sha256
+  timeout          = 10
+  memory_size      = 128
+  tags             = local.tags
+
+  environment {
+    variables = {
+      ALLOWED_ORIGINS                 = join(",", var.shopier_products_allowed_origins)
+      SHOPIER_ACCESS_TOKEN_SECRET_ARN = local.shopier_access_token_secret_arn
+      SHOPIER_API_BASE_URL            = "https://api.shopier.com/v1"
+      SHOPIER_PRODUCTS_LIMIT          = tostring(var.shopier_products_limit)
+    }
+  }
+}
+
+resource "aws_apigatewayv2_api" "shopier_products" {
+  count = var.enable_shopier_products_api ? 1 : 0
+
+  name          = "${var.project_name}-shopier-products"
+  protocol_type = "HTTP"
+  tags          = local.tags
+
+  cors_configuration {
+    allow_headers = ["content-type", "authorization"]
+    allow_methods = ["GET", "OPTIONS"]
+    allow_origins = var.shopier_products_allowed_origins
+    max_age       = 300
+  }
+}
+
+resource "aws_apigatewayv2_integration" "shopier_products" {
+  count = var.enable_shopier_products_api ? 1 : 0
+
+  api_id                 = aws_apigatewayv2_api.shopier_products[0].id
+  integration_type       = "AWS_PROXY"
+  integration_uri        = aws_lambda_function.shopier_products[0].invoke_arn
+  payload_format_version = "2.0"
+}
+
+resource "aws_apigatewayv2_route" "shopier_products" {
+  count = var.enable_shopier_products_api ? 1 : 0
+
+  api_id    = aws_apigatewayv2_api.shopier_products[0].id
+  route_key = "GET /products"
+  target    = "integrations/${aws_apigatewayv2_integration.shopier_products[0].id}"
+}
+
+resource "aws_apigatewayv2_stage" "shopier_products" {
+  count = var.enable_shopier_products_api ? 1 : 0
+
+  api_id      = aws_apigatewayv2_api.shopier_products[0].id
+  name        = "$default"
+  auto_deploy = true
+  tags        = local.tags
+}
+
+resource "aws_lambda_permission" "shopier_products_api_gateway" {
+  count = var.enable_shopier_products_api ? 1 : 0
+
+  statement_id  = "AllowExecutionFromApiGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.shopier_products[0].function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.shopier_products[0].execution_arn}/*/*"
+}

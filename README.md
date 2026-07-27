@@ -4,6 +4,18 @@ A single-page React + Vite color configurator for Loop bags.
 
 Customers choose a bag model, assign colors to the model's paintable sections, and copy a human-readable order note. The preview is rendered on canvas and colored with seed-based flood fill.
 
+## Project Memory
+
+For future work on another laptop or in another chat session, start with the durable project notes in:
+
+- `docs/project-context.md`
+- `docs/architecture.md`
+- `docs/deployment.md`
+- `docs/shopier-integration.md`
+- `docs/todo.md`
+
+These files capture the important decisions from previous conversations without storing secrets or relying on chat history.
+
 ## Run Locally
 
 ```bash
@@ -144,6 +156,41 @@ export const enablePreviewDebug = false;
 Temporarily set it to `true` when collecting new seed coordinates.
 
 ## Product Catalog
+
+Production can load ready-made products from the Shopier API through the serverless endpoint managed in Terraform. The browser must never call Shopier directly because the access token is secret.
+
+Recommended production flow:
+
+1. Enable the API in `infra/terraform/terraform.tfvars`:
+
+```hcl
+enable_shopier_products_api      = true
+shopier_access_token_secret_name = "loop/shopier/access-token"
+shopier_products_allowed_origins = ["https://loopdesignbags.com", "https://ekinbarut.com"]
+```
+
+2. Run Terraform and copy the output:
+
+```bash
+cd infra/terraform
+terraform init
+terraform apply
+terraform output shopier_products_endpoint
+```
+
+3. In AWS Secrets Manager, open the secret from `shopier_access_token_secret_name` and set the secret value to the Shopier PAT/access token. The value can be either the raw token or JSON like:
+
+```json
+{ "accessToken": "your-shopier-token" }
+```
+
+4. In GitHub repository variables, set:
+
+```text
+VITE_SHOPIER_PRODUCTS_ENDPOINT=https://your-api-id.execute-api.eu-central-1.amazonaws.com/products
+```
+
+When `VITE_SHOPIER_PRODUCTS_ENDPOINT` is present, it is used first. Google Sheet CSV and local JSON remain as fallback options.
 
 The product cards can be managed from a public Google Sheet CSV export. The app reads the URL from:
 

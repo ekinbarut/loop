@@ -21,3 +21,13 @@ output "github_actions_deploy_policy_arn" {
   description = "IAM deploy policy ARN, if created."
   value       = var.create_github_actions_deploy_user ? aws_iam_policy.github_actions_deploy[0].arn : null
 }
+
+output "shopier_products_endpoint" {
+  description = "Public endpoint for the frontend VITE_SHOPIER_PRODUCTS_ENDPOINT variable."
+  value       = var.enable_shopier_products_api ? "${aws_apigatewayv2_api.shopier_products[0].api_endpoint}/products" : null
+}
+
+output "shopier_access_token_secret_name" {
+  description = "Secrets Manager secret name for the Shopier access token, when Terraform creates it."
+  value       = var.enable_shopier_products_api && var.shopier_access_token_secret_arn == "" ? aws_secretsmanager_secret.shopier_access_token[0].name : null
+}
