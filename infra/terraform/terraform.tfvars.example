@@ -23,13 +23,12 @@ deploy_targets = {
 create_github_actions_deploy_user = true
 github_actions_deploy_user_name   = "loop-github-actions-deploy"
 
-enable_shopier_products_api       = false
-shopier_access_token_secret_name  = "loop/shopier/access-token"
-shopier_access_token_secret_arn   = ""
-shopier_products_allowed_origins  = ["*"]
-shopier_products_limit            = 50
-
 enable_colors_admin_api      = false
 colors_bucket_name           = "loop-configurator-prod"
 colors_object_key            = "data/colors.csv"
-colors_admin_allowed_origins = ["https://loopdesignbags.com", "https://www.loopdesignbags.com"]
+colors_admin_allowed_origins = [
+  "https://loopdesignbags.com",
+  "https://www.loopdesignbags.com",
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+]

@@ -119,12 +119,3 @@ terraform destroy
 ```
 
 S3 buckets must be empty before Terraform can destroy them. If a destroy fails because objects remain, empty the bucket first or add a controlled cleanup step.
-
-## Next Resources
-
-When Shopier checkout is added, extend this directory with:
-
-- Lambda function for server-side Shopier API calls.
-- API Gateway HTTP API.
-- Secrets Manager values or Lambda environment variables for Shopier credentials.
-- DynamoDB orders table if we decide to persist custom order configuration.

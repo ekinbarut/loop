@@ -1,18 +1,8 @@
 # Todo And Open Questions
 
-## Immediate
-
-- Run `terraform init` after adding the `archive` provider.
-- Run `terraform plan` with `enable_shopier_products_api = true`.
-- Apply Terraform to create the Shopier products API.
-- Put the Shopier token into AWS Secrets Manager.
-- Add `VITE_SHOPIER_PRODUCTS_ENDPOINT` to GitHub repository variables.
-- Push and verify the product listing uses the Shopier API in production.
-
 ## Shopier Product Listing
 
-- Confirm the exact Shopier product response shape with the real token.
-- Adjust `infra/lambda/shopier-products/index.mjs` if image/product URL fields differ from expectations.
+- Keep the published Google Sheet columns aligned with the frontend CSV parser.
 - Decide whether out-of-stock products should be hidden or displayed as sold out.
 - Remove the temporary `test` keyword from `ProductShowcase` when no longer needed.
 

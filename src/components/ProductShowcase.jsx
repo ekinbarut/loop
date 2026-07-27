@@ -27,11 +27,13 @@ export function ProductShowcase({ shopierUrl, t }) {
       <div className="product-showcase-heading">
         <div>
           <p id="product-showcase-title">{t('shopLabel')}</p>
+          <h2>{t('discoverProducts')}</h2>
         </div>
         <a className="shopier-link compact" href={shopierUrl} target="_blank" rel="noreferrer">
           {t('goToShop')}
         </a>
       </div>
+      <p className="purchase-guidance">{t('purchaseGuidance')}</p>
 
       {status === 'loading' ? (
         <p className="product-state">{t('productsLoading')}</p>
@@ -43,11 +45,31 @@ export function ProductShowcase({ shopierUrl, t }) {
 
       {products.length > 0 ? (
         <div className="product-grid">
-          {products.map((product) => (
+          {products.map((product) => {
+            const isCustom = product.title.toLocaleLowerCase('tr-TR').includes('custom');
+
+            return (
             <article className="product-card" key={product.id}>
               <div className="product-image-frame">
+                <span className="product-badge">
+                  {isCustom ? t('customProduct') : t('discoverBadge')}
+                </span>
                 {product.imageUrl ? (
-                  <img src={product.imageUrl} alt={product.title} loading="lazy" />
+                  <>
+                    <img
+                      className="product-image-backdrop"
+                      src={product.imageUrl}
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                    />
+                    <img
+                      className="product-image"
+                      src={product.imageUrl}
+                      alt={product.title}
+                      loading="lazy"
+                    />
+                  </>
                 ) : (
                   <div className="product-image-placeholder" aria-hidden="true">
                     LOOP
@@ -65,7 +87,8 @@ export function ProductShowcase({ shopierUrl, t }) {
                 </div>
               </div>
             </article>
-          ))}
+            );
+          })}
         </div>
       ) : null}
     </section>

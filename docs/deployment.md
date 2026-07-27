@@ -41,12 +41,9 @@ S3_BUCKET
 S3_BUCKET_SECONDARY
 CLOUDFRONT_DISTRIBUTION_ID
 CLOUDFRONT_DISTRIBUTION_ID_SECONDARY
-VITE_SHOPIER_PRODUCTS_ENDPOINT
 VITE_PRODUCTS_CSV_URL
 VITE_COLORS_API_ENDPOINT
 ```
-
-`VITE_SHOPIER_PRODUCTS_ENDPOINT` should be set after Terraform creates the Shopier products API.
 
 `VITE_COLORS_API_ENDPOINT` should be set to the `colors_api_endpoint` Terraform output.
 
@@ -55,7 +52,7 @@ For the `loopdesignbags.com` production site, use:
 ```text
 S3_BUCKET_SECONDARY=loopdesignbags.com
 CLOUDFRONT_DISTRIBUTION_ID_SECONDARY=EX6KYC0XQP8EB
-VITE_SHOPIER_PRODUCTS_ENDPOINT=https://y1bm8m7qql.execute-api.eu-central-1.amazonaws.com/products
+VITE_PRODUCTS_CSV_URL=https://docs.google.com/spreadsheets/d/e/.../pub?output=csv
 ```
 
 The secondary deployment target uploads the Vite build to the private bucket root

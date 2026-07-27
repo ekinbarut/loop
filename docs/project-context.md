@@ -6,7 +6,7 @@ This document is the durable project memory for the Loop bag configurator. It ex
 
 Loop needs a mobile-friendly product configurator for custom handmade bags. Customers can choose a bag model, pick colors for paintable sections, preview the result immediately, download the preview image, and send a prepared WhatsApp order message.
 
-The site also lists ready-made Shopier products and is moving toward Shopier API-backed product listing, with payment integration planned later.
+The site also lists ready-made Shopier products from a public Google Sheet CSV.
 
 ## Current App
 
@@ -17,7 +17,7 @@ The site also lists ready-made Shopier products and is moving toward Shopier API
 - The visual configurator uses canvas flood fill over line-art bag images.
 - Bag model/section/palette configuration lives in `src/config/bagModels.js`.
 - Debug coordinate collection can be enabled in `src/constants/preview.js`.
-- Product cards can be loaded from Shopier API, Google Sheet CSV, or local JSON fallback.
+- Product cards load from Google Sheet CSV, with a local JSON fallback.
 
 ## Bag Models
 
@@ -76,11 +76,8 @@ The dynamic background code is in `src/utils/colorTheme.js` and CSS is in `src/A
 Never commit:
 
 - AWS access keys
-- Shopier API keys/tokens
 - `.env`
 - `.envrc`
 - `.aws/`
 - `terraform.tfvars`
 - Terraform state files
-
-Shopier API credentials must never be exposed through Vite environment variables because Vite variables are bundled into browser JavaScript.

@@ -64,9 +64,8 @@ Fixed sections should win over user-editable sections if seed regions overlap. T
 
 Priority order:
 
-1. `VITE_SHOPIER_PRODUCTS_ENDPOINT`: serverless Shopier API proxy.
-2. `VITE_PRODUCTS_CSV_URL`: public Google Sheet CSV fallback.
-3. `public/shopier-products.json`: local fallback.
+1. `VITE_PRODUCTS_CSV_URL`: public Google Sheet CSV.
+2. `public/shopier-products.json`: local fallback.
 
 The frontend expects normalized product objects:
 

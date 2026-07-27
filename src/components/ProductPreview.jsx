@@ -16,6 +16,9 @@ export const ProductPreview = forwardRef(function ProductPreview({ config, model
   const [fullscreenPan, setFullscreenPan] = useState({ x: 0, y: 0 });
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [fullscreenImage, setFullscreenImage] = useState('');
+  const productionNote = model.id === 'canta1'
+    ? t('waistPackProductionNote')
+    : t('barrelRollProductionNote');
 
   useImperativeHandle(ref, () => ({
     getImageBlob() {
@@ -302,6 +305,16 @@ export const ProductPreview = forwardRef(function ProductPreview({ config, model
             role="img"
             width={canvasSize.width}
           />
+          <div className="model-info">
+            <button
+              type="button"
+              aria-label={t('productionInfo')}
+              aria-describedby="model-production-note"
+            >
+              i
+            </button>
+            <span id="model-production-note" role="tooltip">{productionNote}</span>
+          </div>
         </div>
       </div>
 

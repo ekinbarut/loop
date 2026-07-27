@@ -38,36 +38,6 @@ variable "github_actions_deploy_user_name" {
   default     = "loop-github-actions-deploy"
 }
 
-variable "enable_shopier_products_api" {
-  description = "Create Lambda + API Gateway endpoint that lists Shopier products for the frontend."
-  type        = bool
-  default     = false
-}
-
-variable "shopier_access_token_secret_name" {
-  description = "Secrets Manager secret name used when Terraform creates the Shopier access token secret. Put the token value manually after apply."
-  type        = string
-  default     = "loop/shopier/access-token"
-}
-
-variable "shopier_access_token_secret_arn" {
-  description = "Optional existing Secrets Manager secret ARN containing the Shopier PAT/access token. When empty, Terraform creates the secret container."
-  type        = string
-  default     = ""
-}
-
-variable "shopier_products_allowed_origins" {
-  description = "Allowed browser origins for the Shopier products API CORS policy. Use exact production origins when possible."
-  type        = list(string)
-  default     = ["*"]
-}
-
-variable "shopier_products_limit" {
-  description = "Maximum number of Shopier products returned to the storefront. Shopier allows up to 50 per page."
-  type        = number
-  default     = 50
-}
-
 variable "enable_production_site" {
   description = "Create private S3, CloudFront, ACM, and Route 53 resources for the production site."
   type        = bool

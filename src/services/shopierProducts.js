@@ -205,10 +205,8 @@ function cleanProducts(products) {
 }
 
 export async function fetchShopierProducts({ signal } = {}) {
-  const shopierEndpoint = import.meta.env.VITE_SHOPIER_PRODUCTS_ENDPOINT;
   const csvEndpoint = import.meta.env.VITE_PRODUCTS_CSV_URL;
   const sources = [
-    shopierEndpoint ? { type: 'json', endpoint: shopierEndpoint } : null,
     csvEndpoint ? { type: 'csv', endpoint: csvEndpoint } : null,
     { type: 'json', endpoint: './shopier-products.json' },
   ].filter(Boolean);
