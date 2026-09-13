@@ -1442,6 +1442,17 @@ button {
   margin: 0 0 6px;
 }
 
+.admin-header input {
+  box-sizing: border-box;
+  padding: 11px 12px;
+  border: 1px solid #d7ccc2;
+  border-radius: 10px;
+  background: #fff;
+  font: inherit;
+  min-width: 0;
+  width: 200px;
+}
+
 .admin-palette {
   width: min(100%, 920px);
   margin: 0 auto 28px;

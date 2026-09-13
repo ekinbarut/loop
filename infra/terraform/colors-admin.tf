@@ -68,6 +68,14 @@ resource "aws_lambda_function" "colors_admin" {
       ALLOWED_ORIGINS    = join(",", var.colors_admin_allowed_origins)
       COLORS_BUCKET_NAME = var.colors_bucket_name
       COLORS_OBJECT_KEY  = var.colors_object_key
+      ADMIN_TOKEN        = var.colors_admin_token
+    }
+  }
+
+  lifecycle {
+    precondition {
+      condition     = var.colors_admin_token != ""
+      error_message = "colors_admin_token must be set (non-empty) whenever enable_colors_admin_api is true, otherwise the write endpoint accepts no credentials and rejects every request."
     }
   }
 }
@@ -78,7 +86,7 @@ resource "aws_apigatewayv2_api" "colors_admin" {
   protocol_type = "HTTP"
   tags          = local.tags
   cors_configuration {
-    allow_headers = ["content-type"]
+    allow_headers = ["content-type", "x-admin-token"]
     allow_methods = ["GET", "PUT", "OPTIONS"]
     allow_origins = var.colors_admin_allowed_origins
     max_age       = 300

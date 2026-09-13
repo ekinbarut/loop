@@ -3,6 +3,7 @@ import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3
 const s3 = new S3Client({});
 const bucket = process.env.COLORS_BUCKET_NAME;
 const key = process.env.COLORS_OBJECT_KEY || 'data/colors.csv';
+const adminToken = process.env.ADMIN_TOKEN || '';
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || '*').split(',').map((value) => value.trim());
 
 function origin(event) {
@@ -16,13 +17,19 @@ function response(event, statusCode, body, contentType = 'application/json; char
     statusCode,
     headers: {
       'Access-Control-Allow-Origin': origin(event),
-      'Access-Control-Allow-Headers': 'content-type',
+      'Access-Control-Allow-Headers': 'content-type,x-admin-token',
       'Access-Control-Allow-Methods': 'GET,PUT,OPTIONS',
       'Cache-Control': 'no-store',
       'Content-Type': contentType,
     },
     body: contentType.startsWith('application/json') ? JSON.stringify(body) : body,
   };
+}
+
+function isAuthorized(event) {
+  if (!adminToken) return false;
+  const header = event.headers?.['x-admin-token'] || '';
+  return header === adminToken;
 }
 
 function validateCsv(csv) {
@@ -49,6 +56,8 @@ export async function handler(event) {
     }
 
     if (method === 'PUT') {
+      if (!isAuthorized(event)) return response(event, 401, { error: 'Yetkisiz.' });
+
       const { csv } = JSON.parse(event.body || '{}');
       if (!validateCsv(csv)) return response(event, 400, { error: 'Renk verisi geçersiz.' });
       await s3.send(new PutObjectCommand({

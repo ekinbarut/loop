@@ -85,3 +85,10 @@ variable "colors_admin_allowed_origins" {
   type        = list(string)
   default     = ["*"]
 }
+
+variable "colors_admin_token" {
+  description = "Shared secret required in the x-admin-token header to write the colors CSV. Required when enable_colors_admin_api is true."
+  type        = string
+  default     = ""
+  sensitive   = true
+}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 const endpoint = import.meta.env.VITE_COLORS_API_ENDPOINT || '';
+const tokenStorageKey = 'loop-colors-admin-token';
 
 function parseCsv(text) {
   const [header, ...lines] = text.trim().split(/\r?\n/);
@@ -22,6 +23,9 @@ function toCsv(colors) {
 export function ColorAdmin() {
   const [colors, setColors] = useState([]);
   const [status, setStatus] = useState('');
+  const [token, setToken] = useState(
+    () => window.sessionStorage.getItem(tokenStorageKey) || '',
+  );
 
   useEffect(() => {
     if (!endpoint) return;
@@ -35,12 +39,17 @@ export function ColorAdmin() {
     colorIndex === index ? { ...color, ...patch } : color
   )));
 
+  const updateToken = (value) => {
+    setToken(value);
+    window.sessionStorage.setItem(tokenStorageKey, value);
+  };
+
   const save = async () => {
     setStatus('Kaydediliyor…');
     try {
       const result = await fetch(endpoint, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': token },
         body: JSON.stringify({ csv: toCsv(colors) }),
       });
       const body = await result.json();
@@ -57,7 +66,17 @@ export function ColorAdmin() {
 
   return (
     <main className="admin-shell">
-      <header className="admin-header"><div><h1>Renk yönetimi</h1><p>Değişiklikler müşteri ekranına doğrudan yansır.</p></div><button onClick={save}>Kaydet</button></header>
+      <header className="admin-header">
+        <div><h1>Renk yönetimi</h1><p>Değişiklikler müşteri ekranına doğrudan yansır.</p></div>
+        <input
+          aria-label="Yönetici anahtarı"
+          placeholder="Yönetici anahtarı"
+          type="password"
+          value={token}
+          onChange={(e) => updateToken(e.target.value)}
+        />
+        <button onClick={save}>Kaydet</button>
+      </header>
       {['fabric', 'strap'].map((palette) => (
         <section className="admin-palette" key={palette}>
           <h2>{palette === 'fabric' ? 'İmperteks renkleri' : 'Kolon renkleri'}</h2>

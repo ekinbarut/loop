@@ -32,3 +32,7 @@ colors_admin_allowed_origins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
 ]
+# Required whenever enable_colors_admin_api is true. Generate with e.g.
+# `openssl rand -hex 32` and keep it out of git; enter it in the admin page
+# each session, do not bake it into the frontend build.
+colors_admin_token = ""

@@ -100,8 +100,11 @@ The production site module creates:
 ## Color admin
 
 The color editor is available at `/root/asli`. It stores CSV data in S3 through
-a Lambda/API Gateway endpoint. There is currently no login; the planned puzzle
-can be added to the frontend later.
+a Lambda/API Gateway endpoint. The memory-game puzzle in front of the page is
+just a UI speed bump; the write endpoint itself is protected by a shared
+`x-admin-token` header checked in the Lambda (`colors_admin_token`). The GET
+route stays open without a token because the live storefront reads the same
+endpoint to render customer-facing colors.
 
 Set these values in `terraform.tfvars`:
 
@@ -110,7 +113,12 @@ enable_colors_admin_api      = true
 colors_bucket_name           = "loopdesignbags.com"
 colors_object_key            = "data/colors.csv"
 colors_admin_allowed_origins = ["https://loopdesignbags.com", "https://www.loopdesignbags.com"]
+colors_admin_token           = "generate with `openssl rand -hex 32`, keep out of git"
 ```
+
+Enter the same token into the "Yönetici anahtarı" field on the `/asli` admin
+page each session (it's kept in `sessionStorage`, not the build) before
+saving color changes.
 
 After `terraform apply`, add the `colors_api_endpoint` output to the GitHub repository variable
 `VITE_COLORS_API_ENDPOINT` and deploy the site. The initial `colors.csv` is
